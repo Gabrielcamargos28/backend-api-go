@@ -5,7 +5,7 @@ import "net/http"
 type RestErr struct {
 	Mensagem string   `json: "mensagem"`
 	Err      string   `json: "error`
-	Codigo   int64    `json: "codigo`
+	Campo    int      `json: "campo`
 	Causas   []Causas `json: "causa"`
 }
 
@@ -18,11 +18,11 @@ func (r *RestErr) Error() string {
 	return r.Mensagem
 }
 
-func NewRestErr(mensagem string, err string, codigo int64, causas []Causas) *RestErr {
+func NewRestErr(mensagem string, err string, campo int, causas []Causas) *RestErr {
 	return &RestErr{
 		Mensagem: mensagem,
 		Err:      err,
-		Codigo:   codigo,
+		Campo:    campo,
 		Causas:   causas,
 	}
 }
@@ -31,14 +31,14 @@ func NewBadRequestError(mensagem string) *RestErr {
 	return &RestErr{
 		Mensagem: mensagem,
 		Err:      "Pedido invalido",
-		Codigo:   http.StatusBadRequest,
+		Campo:    http.StatusBadRequest,
 	}
 }
 func NewBadValidationError(mensagem string, causas []Causas) *RestErr {
 	return &RestErr{
 		Mensagem: mensagem,
 		Err:      "Pedido invalido",
-		Codigo:   http.StatusBadRequest,
+		Campo:    http.StatusBadRequest,
 		Causas:   causas,
 	}
 }
@@ -46,7 +46,7 @@ func NewInternalServerError(mensagem string, causas []Causas) *RestErr {
 	return &RestErr{
 		Mensagem: mensagem,
 		Err:      "Erro interno",
-		Codigo:   http.StatusInternalServerError,
+		Campo:    http.StatusInternalServerError,
 		Causas:   causas,
 	}
 }
@@ -54,13 +54,13 @@ func NewUnauthorizedRequestError(mensagem string) *RestErr {
 	return &RestErr{
 		Mensagem: mensagem,
 		Err:      "não autorizado",
-		Codigo:   http.StatusUnauthorized,
+		Campo:    http.StatusUnauthorized,
 	}
 }
 func NewForbiddenError(mensagem string) *RestErr {
 	return &RestErr{
 		Mensagem: mensagem,
 		Err:      "forbidden",
-		Codigo:   http.StatusForbidden,
+		Campo:    http.StatusForbidden,
 	}
 }
