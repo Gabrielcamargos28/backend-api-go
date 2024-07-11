@@ -2,14 +2,14 @@ package usuario
 
 import (
 	"controle-notas/src/configuration/rest_err"
-	"controle-notas/src/controller/model/request/usuario"
+
 	"fmt"
 
 	"github.com/gin-gonic/gin"
 )
 
 func CriarUsuario(c *gin.Context) {
-	var usuarioRequest usuario.UsuarioRequest
+	var usuarioRequest usuario.usuarioRequest
 
 	if err := c.ShouldBindJSON(&usuarioRequest); err != nil {
 		restErr := rest_err.NewBadRequestError(
