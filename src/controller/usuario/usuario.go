@@ -2,6 +2,7 @@ package usuario
 
 import (
 	"controle-notas/src/configuration/rest_err"
+	"controle-notas/src/controller/model/request/usuario"
 
 	"fmt"
 
@@ -9,7 +10,7 @@ import (
 )
 
 func CriarUsuario(c *gin.Context) {
-	var usuarioRequest usuario.usuarioRequest
+	var usuarioRequest usuario.UsuarioRequest
 
 	if err := c.ShouldBindJSON(&usuarioRequest); err != nil {
 		restErr := rest_err.NewBadRequestError(

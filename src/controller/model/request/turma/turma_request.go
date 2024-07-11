@@ -1,4 +1,4 @@
-package model
+package turma
 
 import (
 	"controle-notas/src/controller/model/request/professor"
