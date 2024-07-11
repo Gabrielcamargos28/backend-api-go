@@ -1,7 +1,6 @@
 package main
 
 import (
-	"controle-notas/src/controller/rotas"
 	"log"
 
 	"github.com/gin-gonic/gin"
@@ -15,11 +14,11 @@ func main() {
 	}
 
 	router := gin.Default()
-	grupoUsuario := router.Group("/usuario")
-	grupoProfessor := router.Group("/professor")
+	//grupoUsuario := router.Group("/usuario")
+	//grupoProfessor := router.Group("/professor")
 
-	rotas.IniciarRotasUsuario(grupoUsuario)
-	rotas.IniciarRotasProfessor(grupoProfessor)
+	//rotas.IniciarRotasUsuario(grupoUsuario)
+	//rotas.IniciarRotasProfessor(grupoProfessor)
 
 	if err := router.Run(":8080"); err != nil {
 		log.Fatal(err)
