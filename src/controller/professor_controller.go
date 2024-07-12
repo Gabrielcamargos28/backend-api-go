@@ -22,14 +22,17 @@ func NewProfessorController(sevice professor.ProfessorService) *ProfessorControl
 
 func (controller *ProfessorController) Create(ctx *gin.Context) {
 
-	criarRequisicao := request.ProfessorRequest{}
-
+	var criarRequisicao request.ProfessorRequest
+	if err := ctx.ShouldBindJSON(&criarRequisicao); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
 	controller.ProfessorService.Create(criarRequisicao)
 
 	webResponse := data.ResponseApi{
 		Code:   http.StatusOK,
 		Status: "Ok",
-		Data:   nil,
+		Data:   criarRequisicao,
 	}
 	ctx.Header("Content-Type", "application/json")
 	ctx.JSON(http.StatusOK, webResponse)
@@ -37,11 +40,19 @@ func (controller *ProfessorController) Create(ctx *gin.Context) {
 
 func (controller *ProfessorController) Update(ctx *gin.Context) {
 
-	requisicaoAtualizar := request.AtualizaProfessorRequest{}
-
 	professorId := ctx.Param("professorId")
 	id, err := strconv.Atoi(professorId)
-	err.Error()
+
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "ID inválido"})
+		return
+	}
+
+	var requisicaoAtualizar = request.AtualizaProfessorRequest{}
+	if err := ctx.ShouldBindJSON(&requisicaoAtualizar); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
 	requisicaoAtualizar.Id = id
 
 	controller.ProfessorService.Update(requisicaoAtualizar)
@@ -49,7 +60,7 @@ func (controller *ProfessorController) Update(ctx *gin.Context) {
 	webResponse := data.ResponseApi{
 		Code:   http.StatusOK,
 		Status: "Ok",
-		Data:   nil,
+		Data:   requisicaoAtualizar,
 	}
 	ctx.Header("Content-Type", "application/json")
 	ctx.JSON(http.StatusOK, webResponse)
@@ -58,8 +69,12 @@ func (controller *ProfessorController) Update(ctx *gin.Context) {
 func (controller *ProfessorController) Delete(ctx *gin.Context) {
 
 	professorId := ctx.Param("professorId")
+
 	id, err := strconv.Atoi(professorId)
-	err.Error()
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "ID inválido"})
+		return
+	}
 	controller.ProfessorService.Delete(id)
 
 	webResponse := data.ResponseApi{
@@ -75,7 +90,11 @@ func (controller *ProfessorController) FindById(ctx *gin.Context) {
 
 	professorId := ctx.Param("professorId")
 	id, err := strconv.Atoi(professorId)
-	err.Error()
+
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "ID inválido"})
+		return
+	}
 
 	professorResponse := controller.ProfessorService.FindById(id)
 

@@ -8,5 +8,20 @@ import (
 )
 
 func NewRouter(professorController *controller.ProfessorController) *gin.Engine {
-	ctx.JSON(http.StatusOK, "")
+
+	router := gin.Default()
+
+	router.GET("", func(ctx *gin.Context) {
+		ctx.JSON(http.StatusOK, "Bem vindo")
+	})
+	baseRouter := router.Group("/api")
+
+	professorRouter := baseRouter.Group("/professor")
+	professorRouter.GET("/listarTodos", professorController.FindAll)
+	professorRouter.GET("/listar/:professorId", professorController.FindById)
+	professorRouter.POST("/criarProfessor", professorController.Create)
+	professorRouter.PUT("/listar/:professorId", professorController.Update)
+	professorRouter.DELETE("/deletar/:professorId", professorController.FindAll)
+
+	return router
 }

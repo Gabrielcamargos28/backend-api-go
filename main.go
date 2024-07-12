@@ -5,10 +5,11 @@ import (
 	"controle-notas/src/controller"
 	"controle-notas/src/models"
 	"controle-notas/src/repository"
+	"controle-notas/src/router"
 	"controle-notas/src/service/professor"
 	"log"
+	"net/http"
 
-	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
 	"github.com/joho/godotenv"
 )
@@ -21,23 +22,22 @@ func main() {
 	}
 	db := database.DatabaseConnection()
 	validate := validator.New()
-	db.Table("professor").AutoMigrate(&models.Professor{})
+	//db.Table("professor").AutoMigrate(&models.Professor{})
+	db.AutoMigrate(&models.Professor{})
 
-	//Repository
 	professorRepository := repository.NewProfessorRepositoryImple(db)
 
-	//Service
 	professorService := professor.NewProfessorServiceImple(professorRepository, validate)
 
-	//Controller
 	professorController := controller.NewProfessorController(professorService)
 
-	//Router
-	routes := router.NewProfessorController(professorController)
+	routes := router.NewRouter(professorController)
 
-	router := gin.Default()
-
-	if err := router.Run(":8080"); err != nil {
-		log.Fatal(err)
+	server := &http.Server{
+		Addr:    ":3000",
+		Handler: routes,
 	}
+
+	server.ListenAndServe()
+
 }

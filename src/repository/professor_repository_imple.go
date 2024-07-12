@@ -21,9 +21,9 @@ func (p *ProfessorRepositoryImple) Delete(professorId int) {
 }
 
 func (p *ProfessorRepositoryImple) FindAll() []models.Professor {
-	var professors []models.Professor
-	p.Db.Find(&professors)
-	return professors
+	var professores []models.Professor
+	p.Db.Find(&professores)
+	return professores
 }
 
 func (p *ProfessorRepositoryImple) FindById(professorId int) (models.Professor, error) {

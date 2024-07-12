@@ -5,6 +5,7 @@ import (
 	"controle-notas/src/data/professor/response"
 	"controle-notas/src/models"
 	"controle-notas/src/repository"
+	"log"
 
 	"github.com/go-playground/validator/v10"
 )
@@ -52,7 +53,11 @@ func (p *ProfessorServiceImple) FindAll() []response.ProfessorResponse {
 func (p *ProfessorServiceImple) FindById(professorId int) response.ProfessorResponse {
 
 	professorData, err := p.ProfessorRepository.FindById(professorId)
-	error.Error(err)
+	if err != nil {
+		// Tratar o erro de alguma forma apropriada, como logar e retornar um valor de erro
+		log.Printf("Erro ao buscar professor por ID %d: %v", professorId, err)
+		return response.ProfessorResponse{} // Ou algum valor de resposta padrão, dependendo do seu caso
+	}
 
 	professorResponse := response.ProfessorResponse{
 		Id:   professorData.Id,
