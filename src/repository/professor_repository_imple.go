@@ -1,6 +1,7 @@
 package repository
 
 import (
+	"controle-notas/src/data/professor/request"
 	"controle-notas/src/models"
 
 	"gorm.io/gorm"
@@ -36,5 +37,11 @@ func (p *ProfessorRepositoryImple) Save(professor models.Professor) {
 }
 
 func (p *ProfessorRepositoryImple) Update(professor models.Professor) {
-	p.Db.Save(&professor)
+	var updateProfessor = request.AtualizaProfessorRequest{
+		Id:    professor.Id,
+		Nome:  professor.Nome,
+		Email: professor.Email,
+	}
+	p.Db.Model(&professor).Updates(updateProfessor)
+
 }

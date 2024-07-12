@@ -1,4 +1,4 @@
-package professor
+package response
 
 type ProfessorResponse struct {
 	Id   int    `json:"id"`
