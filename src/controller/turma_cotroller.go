@@ -2,32 +2,32 @@ package controller
 
 import (
 	"controle-notas/src/data"
-	"controle-notas/src/data/professor/request"
-	"controle-notas/src/service/professor"
+	"controle-notas/src/data/turma/request"
+	"controle-notas/src/service/turma"
 	"net/http"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
 )
 
-type ProfessorController struct {
-	ProfessorService professor.ProfessorService
+type TurmaController struct {
+	TurmaService turma.TurmaService
 }
 
-func NewProfessorController(sevice professor.ProfessorService) *ProfessorController {
-	return &ProfessorController{
-		ProfessorService: sevice,
+func NewTurmaController(service turma.TurmaService) *TurmaController {
+	return &TurmaController{
+		TurmaService: service,
 	}
 }
 
-func (controller *ProfessorController) Create(ctx *gin.Context) {
+func (controller *TurmaController) Create(ctx *gin.Context) {
 
-	var criarRequisicao request.ProfessorRequest
+	var criarRequisicao request.TurmaRequest
 	if err := ctx.ShouldBindJSON(&criarRequisicao); err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	controller.ProfessorService.Create(criarRequisicao)
+	controller.TurmaService.Create(criarRequisicao)
 
 	webResponse := data.ResponseApi{
 		Code:   http.StatusOK,
@@ -38,24 +38,24 @@ func (controller *ProfessorController) Create(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, webResponse)
 }
 
-func (controller *ProfessorController) Update(ctx *gin.Context) {
+func (controller *TurmaController) Update(ctx *gin.Context) {
 
-	professorId := ctx.Param("professorId")
-	id, err := strconv.ParseUint(professorId, 10, 32)
+	turmaId := ctx.Param("turmaId")
+	id, err := strconv.ParseUint(turmaId, 10, 32)
 
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": "ID inválido"})
 		return
 	}
 
-	var requisicaoAtualizar = request.AtualizaProfessorRequest{}
+	var requisicaoAtualizar = request.AtualizaTurmaRequest{}
 	if err := ctx.ShouldBindJSON(&requisicaoAtualizar); err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 	requisicaoAtualizar.Id = uint(id)
 
-	controller.ProfessorService.Update(requisicaoAtualizar)
+	controller.TurmaService.Update(requisicaoAtualizar)
 
 	webResponse := data.ResponseApi{
 		Code:   http.StatusOK,
@@ -66,16 +66,16 @@ func (controller *ProfessorController) Update(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, webResponse)
 }
 
-func (controller *ProfessorController) Delete(ctx *gin.Context) {
+func (controller *TurmaController) Delete(ctx *gin.Context) {
 
-	professorId := ctx.Param("professorId")
+	turmaId := ctx.Param("turmaId")
 
-	id, err := strconv.ParseUint(professorId, 10, 32)
+	id, err := strconv.ParseUint(turmaId, 10, 32)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": "ID inválido"})
 		return
 	}
-	controller.ProfessorService.Delete(uint(id))
+	controller.TurmaService.Delete(uint(id))
 
 	webResponse := data.ResponseApi{
 		Code:   http.StatusOK,
@@ -86,34 +86,34 @@ func (controller *ProfessorController) Delete(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, webResponse)
 }
 
-func (controller *ProfessorController) FindById(ctx *gin.Context) {
+func (controller *TurmaController) FindById(ctx *gin.Context) {
 
-	professorId := ctx.Param("professorId")
-	id, err := strconv.ParseUint(professorId, 10, 32)
+	turmaId := ctx.Param("turmaId")
+	id, err := strconv.ParseUint(turmaId, 10, 32)
 
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": "ID inválido"})
 		return
 	}
 
-	professorResponse := controller.ProfessorService.FindById(uint(id))
+	turmaResponse := controller.TurmaService.FindById(uint(id))
 
 	webResponse := data.ResponseApi{
 		Code:   http.StatusOK,
 		Status: "Ok",
-		Data:   professorResponse,
+		Data:   turmaResponse,
 	}
 	ctx.Header("Content-Type", "application/json")
 	ctx.JSON(http.StatusOK, webResponse)
 }
 
-func (controller *ProfessorController) FindAll(ctx *gin.Context) {
+func (controller *TurmaController) FindAll(ctx *gin.Context) {
 
-	professorResponse := controller.ProfessorService.FindAll()
+	turmaResponse := controller.TurmaService.FindAll()
 	webResponse := data.ResponseApi{
 		Code:   http.StatusOK,
 		Status: "Ok",
-		Data:   professorResponse,
+		Data:   turmaResponse,
 	}
 	ctx.Header("Content-Type", "application/json")
 	ctx.JSON(http.StatusOK, webResponse)

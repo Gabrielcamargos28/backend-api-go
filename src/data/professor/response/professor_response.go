@@ -1,6 +1,6 @@
 package response
 
 type ProfessorResponse struct {
-	Id   int    `json:"id"`
+	Id   uint   `json:"id"`
 	Nome string `json:"nome"`
 }

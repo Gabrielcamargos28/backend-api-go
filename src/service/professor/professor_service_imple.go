@@ -32,7 +32,7 @@ func (p *ProfessorServiceImple) Create(professor request.ProfessorRequest) {
 	p.ProfessorRepository.Save(professorModel)
 }
 
-func (p *ProfessorServiceImple) Delete(professorId int) {
+func (p *ProfessorServiceImple) Delete(professorId uint) {
 	p.ProfessorRepository.Delete(professorId)
 }
 
@@ -50,13 +50,13 @@ func (p *ProfessorServiceImple) FindAll() []response.ProfessorResponse {
 	return produtos
 }
 
-func (p *ProfessorServiceImple) FindById(professorId int) response.ProfessorResponse {
+func (p *ProfessorServiceImple) FindById(professorId uint) response.ProfessorResponse {
 
 	professorData, err := p.ProfessorRepository.FindById(professorId)
 	if err != nil {
-		// Tratar o erro de alguma forma apropriada, como logar e retornar um valor de erro
+
 		log.Printf("Erro ao buscar professor por ID %d: %v", professorId, err)
-		return response.ProfessorResponse{} // Ou algum valor de resposta padrão, dependendo do seu caso
+		return response.ProfessorResponse{}
 	}
 
 	professorResponse := response.ProfessorResponse{
@@ -67,8 +67,11 @@ func (p *ProfessorServiceImple) FindById(professorId int) response.ProfessorResp
 }
 
 func (p *ProfessorServiceImple) Update(professor request.AtualizaProfessorRequest) {
-	professorData, err := p.ProfessorRepository.FindById((professor.Id))
-	error.Error(err)
+
+	professorData, err := p.ProfessorRepository.FindById(professor.Id)
+	if err != nil {
+		log.Printf("Erro ao atualizar")
+	}
 	professorData.Nome = professor.Nome
 	professorData.Email = professor.Email
 	professorData.CPF = professor.CPF

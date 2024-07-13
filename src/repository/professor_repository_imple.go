@@ -15,7 +15,7 @@ func NewProfessorRepositoryImple(Db *gorm.DB) ProfessorRepository {
 	return &ProfessorRepositoryImple{Db: Db}
 }
 
-func (p *ProfessorRepositoryImple) Delete(professorId int) {
+func (p *ProfessorRepositoryImple) Delete(professorId uint) {
 	var professor models.Professor
 	p.Db.Where("id = ?", professorId).Delete(&professor)
 }
@@ -26,7 +26,7 @@ func (p *ProfessorRepositoryImple) FindAll() []models.Professor {
 	return professores
 }
 
-func (p *ProfessorRepositoryImple) FindById(professorId int) (models.Professor, error) {
+func (p *ProfessorRepositoryImple) FindById(professorId uint) (models.Professor, error) {
 	var professor models.Professor
 	err := p.Db.First(&professor, professorId).Error
 	return professor, err
