@@ -20,8 +20,8 @@ func NewRouter(professorController *controller.ProfessorController) *gin.Engine 
 	professorRouter.GET("/listarTodos", professorController.FindAll)
 	professorRouter.GET("/listar/:professorId", professorController.FindById)
 	professorRouter.POST("/criarProfessor", professorController.Create)
-	professorRouter.PUT("/listar/:professorId", professorController.Update)
-	professorRouter.DELETE("/deletar/:professorId", professorController.FindAll)
+	professorRouter.PUT("/atualizar/:professorId", professorController.Update)
+	professorRouter.DELETE("/deletar/:professorId", professorController.Delete)
 
 	return router
 }
