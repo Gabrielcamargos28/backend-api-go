@@ -96,8 +96,11 @@ func (controller *TurmaController) FindById(ctx *gin.Context) {
 		return
 	}
 
-	turmaResponse := controller.TurmaService.FindById(uint(id))
-
+	turmaResponse, err := controller.TurmaService.FindById(uint(id))
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "ID inválido"})
+		return
+	}
 	webResponse := data.ResponseApi{
 		Code:   http.StatusOK,
 		Status: "Ok",
@@ -124,7 +127,9 @@ func (controller *TurmaController) AdicionarAlunos(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, gin.H{"erro: ": err.Error()})
 		return
 	}
+
 	controller.TurmaService.AdicionarAlunos(requisicao)
+
 	webResponse := data.ResponseApi{
 		Code:   http.StatusOK,
 		Status: "Ok",
@@ -133,7 +138,7 @@ func (controller *TurmaController) AdicionarAlunos(ctx *gin.Context) {
 	ctx.Header("Content-Type", "application/json")
 	ctx.JSON(http.StatusOK, webResponse)
 }
-func (tc *TurmaController) RemoveAlunoDaTurma(ctx *gin.Context) {
+func (controller *TurmaController) RemoveAlunoDaTurma(ctx *gin.Context) {
 	var requisicao request.RemoverAlunoTurmaRequest
 	if err := ctx.ShouldBindJSON(&requisicao); err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -141,10 +146,9 @@ func (tc *TurmaController) RemoveAlunoDaTurma(ctx *gin.Context) {
 	}
 
 	for _, alunoId := range requisicao.AlunosId {
-		err := tc.TurmaService.RemoveAlunoTurma(alunoId, requisicao.TurmaId)
+		err := controller.TurmaService.RemoveAlunoTurma(alunoId, requisicao.TurmaId)
 		if err != nil {
 			ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Erro ao remover aluno da turma"})
-			return
 		}
 	}
 	webResponse := data.ResponseApi{

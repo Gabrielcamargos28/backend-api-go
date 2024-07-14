@@ -55,11 +55,12 @@ func (t *TurmaServiceImple) FindAll() []response.TurmaResponse {
 	return turmas
 }
 
-func (t *TurmaServiceImple) FindById(turmaId uint) response.TurmaResponse {
+func (t *TurmaServiceImple) FindById(turmaId uint) (response.TurmaResponse, error) {
 	turmaData, err := t.TurmaRepository.FindById(turmaId)
+
 	if err != nil {
 		log.Printf("Erro ao buscar turma por ID %d: %v", turmaId, err)
-		return response.TurmaResponse{}
+		return response.TurmaResponse{}, err
 	}
 
 	turmaResponse := response.TurmaResponse{
@@ -69,7 +70,7 @@ func (t *TurmaServiceImple) FindById(turmaId uint) response.TurmaResponse {
 		Ano:       turmaData.Ano,
 		Professor: turmaData.Professor.Nome,
 	}
-	return turmaResponse
+	return turmaResponse, nil
 }
 
 func (t *TurmaServiceImple) Update(turma request.AtualizaTurmaRequest) {
@@ -113,6 +114,7 @@ func (t *TurmaServiceImple) AdicionarAlunos(request request.AdicioanrAlunosTurma
 }
 func (t *TurmaServiceImple) RemoveAlunoTurma(alunoId uint, turmaId uint) error {
 	turma, err := t.TurmaRepository.FindById(turmaId)
+
 	if err != nil {
 		return err
 	}
