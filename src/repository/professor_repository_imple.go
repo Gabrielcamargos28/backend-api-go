@@ -37,7 +37,7 @@ func (p *ProfessorRepositoryImple) Save(professor models.Professor) {
 }
 
 func (p *ProfessorRepositoryImple) Update(professor models.Professor) {
-	var updateProfessor = request.AtualizaProfessorRequest{
+	var updateProfessor = request.AtualizarProfessorRequest{
 		Id:    professor.Id,
 		Nome:  professor.Nome,
 		Email: professor.Email,

@@ -7,7 +7,7 @@ import (
 
 type ProfessorService interface {
 	Create(professor request.ProfessorRequest)
-	Update(professor request.AtualizaProfessorRequest)
+	Update(professor request.AtualizarProfessorRequest)
 	Delete(professorId uint)
 	FindById(professorId uint) response.ProfessorResponse
 	FindAll() []response.ProfessorResponse

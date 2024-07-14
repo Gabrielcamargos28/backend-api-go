@@ -6,6 +6,7 @@ import (
 	"controle-notas/src/models"
 	"controle-notas/src/repository"
 	"controle-notas/src/router"
+	"controle-notas/src/service/aluno"
 	"controle-notas/src/service/professor"
 	"controle-notas/src/service/turma"
 	"log"
@@ -30,14 +31,17 @@ func main() {
 
 	professorRepository := repository.NewProfessorRepositoryImple(db)
 	turmaRepository := repository.NewTurmaRepositoryImple(db)
+	alunoRepository := repository.NewAlunoRepositoryImple(db)
 
 	professorService := professor.NewProfessorServiceImple(professorRepository, validate)
 	turmaService := turma.NewTurmaServiceImple(turmaRepository, validate)
+	alunoService := aluno.NewAlunoServiceImple(alunoRepository, validate)
 
 	professorController := controller.NewProfessorController(professorService)
 	turmaController := controller.NewTurmaController(turmaService)
+	alunoController := controller.NewAlunoController(alunoService)
 
-	routes := router.NewRouter(professorController, turmaController)
+	routes := router.NewRouter(professorController, turmaController, alunoController)
 
 	server := &http.Server{
 		Addr:    ":3000",

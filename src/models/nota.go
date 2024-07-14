@@ -1,7 +1,7 @@
 package models
 
 type Nota struct {
-	ID          uint      `gorm:"primaryKey"`
+	Id          uint      `gorm:"primaryKey"`
 	Valor       float64   `gorm:"not null"`
 	AlunoID     uint      `gorm:"not null"`
 	Aluno       Aluno     `gorm:"foreignKey:AlunoID"`

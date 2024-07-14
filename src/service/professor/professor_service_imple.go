@@ -66,7 +66,7 @@ func (p *ProfessorServiceImple) FindById(professorId uint) response.ProfessorRes
 	return professorResponse
 }
 
-func (p *ProfessorServiceImple) Update(professor request.AtualizaProfessorRequest) {
+func (p *ProfessorServiceImple) Update(professor request.AtualizarProfessorRequest) {
 
 	professorData, err := p.ProfessorRepository.FindById(professor.Id)
 	if err != nil {

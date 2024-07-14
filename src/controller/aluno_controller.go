@@ -2,32 +2,33 @@ package controller
 
 import (
 	"controle-notas/src/data"
-	"controle-notas/src/data/professor/request"
-	"controle-notas/src/service/professor"
+	"controle-notas/src/data/aluno/request"
+
+	"controle-notas/src/service/aluno"
 	"net/http"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
 )
 
-type ProfessorController struct {
-	ProfessorService professor.ProfessorService
+type AlunoController struct {
+	AlunoService aluno.AlunoService
 }
 
-func NewProfessorController(sevice professor.ProfessorService) *ProfessorController {
-	return &ProfessorController{
-		ProfessorService: sevice,
+func NewAlunoController(sevice aluno.AlunoService) *AlunoController {
+	return &AlunoController{
+		AlunoService: sevice,
 	}
 }
 
-func (controller *ProfessorController) Create(ctx *gin.Context) {
+func (controller *AlunoController) Create(ctx *gin.Context) {
 
-	var criarRequisicao request.ProfessorRequest
+	var criarRequisicao request.AlunoRequest
 	if err := ctx.ShouldBindJSON(&criarRequisicao); err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	controller.ProfessorService.Create(criarRequisicao)
+	controller.AlunoService.Create(criarRequisicao)
 
 	webResponse := data.ResponseApi{
 		Code:   http.StatusOK,
@@ -38,24 +39,24 @@ func (controller *ProfessorController) Create(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, webResponse)
 }
 
-func (controller *ProfessorController) Update(ctx *gin.Context) {
+func (controller *AlunoController) Update(ctx *gin.Context) {
 
-	professorId := ctx.Param("professorId")
-	id, err := strconv.ParseUint(professorId, 10, 32)
+	alunoId := ctx.Param("alunoId")
+	id, err := strconv.ParseUint(alunoId, 10, 32)
 
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": "ID inválido"})
 		return
 	}
 
-	var requisicaoAtualizar = request.AtualizarProfessorRequest{}
+	var requisicaoAtualizar = request.AtualizarAlunoRequest{}
 	if err := ctx.ShouldBindJSON(&requisicaoAtualizar); err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 	requisicaoAtualizar.Id = uint(id)
 
-	controller.ProfessorService.Update(requisicaoAtualizar)
+	controller.AlunoService.Update(requisicaoAtualizar)
 
 	webResponse := data.ResponseApi{
 		Code:   http.StatusOK,
@@ -66,16 +67,16 @@ func (controller *ProfessorController) Update(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, webResponse)
 }
 
-func (controller *ProfessorController) Delete(ctx *gin.Context) {
+func (controller *AlunoController) Delete(ctx *gin.Context) {
 
-	professorId := ctx.Param("professorId")
+	alunoId := ctx.Param("alunoId")
 
-	id, err := strconv.ParseUint(professorId, 10, 32)
+	id, err := strconv.ParseUint(alunoId, 10, 32)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": "ID inválido"})
 		return
 	}
-	controller.ProfessorService.Delete(uint(id))
+	controller.AlunoService.Delete(uint(id))
 
 	webResponse := data.ResponseApi{
 		Code:   http.StatusOK,
@@ -86,17 +87,17 @@ func (controller *ProfessorController) Delete(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, webResponse)
 }
 
-func (controller *ProfessorController) FindById(ctx *gin.Context) {
+func (controller *AlunoController) FindById(ctx *gin.Context) {
 
-	professorId := ctx.Param("professorId")
-	id, err := strconv.ParseUint(professorId, 10, 32)
+	alunoId := ctx.Param("alunoId")
+	id, err := strconv.ParseUint(alunoId, 10, 32)
 
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": "ID inválido"})
 		return
 	}
 
-	professorResponse := controller.ProfessorService.FindById(uint(id))
+	professorResponse := controller.AlunoService.FindById(uint(id))
 
 	webResponse := data.ResponseApi{
 		Code:   http.StatusOK,
@@ -107,9 +108,9 @@ func (controller *ProfessorController) FindById(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, webResponse)
 }
 
-func (controller *ProfessorController) FindAll(ctx *gin.Context) {
+func (controller *AlunoController) FindAll(ctx *gin.Context) {
 
-	professorResponse := controller.ProfessorService.FindAll()
+	professorResponse := controller.AlunoService.FindAll()
 	webResponse := data.ResponseApi{
 		Code:   http.StatusOK,
 		Status: "Ok",

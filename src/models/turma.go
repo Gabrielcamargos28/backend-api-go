@@ -10,3 +10,7 @@ type Turma struct {
 	Atividades  []Atividade `gorm:"foreignKey:TurmaID"`
 	Alunos      []Aluno     `gorm:"many2many:turma_alunos;"`
 }
+
+func (Turma) TableName() string {
+	return "turma"
+}

@@ -5,7 +5,7 @@ import (
 )
 
 type Atividade struct {
-	ID      uint      `gorm:"primaryKey"`
+	Id      uint      `gorm:"primaryKey"`
 	Valor   float64   `gorm:"not null"`
 	Data    time.Time `gorm:"not null"`
 	TurmaID uint      `gorm:"not null"`
