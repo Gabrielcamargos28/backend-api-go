@@ -111,3 +111,23 @@ func (t *TurmaServiceImple) AdicionarAlunos(request request.AdicioanrAlunosTurma
 		log.Printf("Erro ao atualizar turma: %v", err)
 	}
 }
+func (t *TurmaServiceImple) RemoveAlunoTurma(alunoId uint, turmaId uint) error {
+	turma, err := t.TurmaRepository.FindById(turmaId)
+	if err != nil {
+		return err
+	}
+
+	for i, aluno := range turma.Alunos {
+		if aluno.Id == alunoId {
+			turma.Alunos = append(turma.Alunos[:i], turma.Alunos[i+1:]...)
+			break
+		}
+	}
+
+	t.TurmaRepository.Update(turma)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}

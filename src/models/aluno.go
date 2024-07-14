@@ -4,7 +4,7 @@ type Aluno struct {
 	Id        uint    `gorm:"primaryKey"`
 	Nome      string  `gorm:"type:varchar(255);not null"`
 	Matricula string  `gorm:"type:varchar(255);unique;not null"`
-	Turmas    []Turma `gorm:"many2many:aluno_turmas;"`
+	Turmas    []Turma `gorm:"many2many:turma_alunos;"`
 }
 
 func (Aluno) TableName() string {

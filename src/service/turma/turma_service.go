@@ -12,4 +12,5 @@ type TurmaService interface {
 	FindById(turmaId uint) response.TurmaResponse
 	FindAll() []response.TurmaResponse
 	AdicionarAlunos(turma request.AdicioanrAlunosTurma)
+	RemoveAlunoTurma(alunoId uint, turmaId uint) error
 }
