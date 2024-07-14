@@ -27,6 +27,14 @@ func NewRestErr(mensagem string, err string, campo int, causas []Causas) *RestEr
 	}
 }
 
+func NewNotFoundError(mensagem string) *RestErr {
+	return &RestErr{
+		Mensagem: mensagem,
+		Err:      "Não encontrado",
+		Campo:    http.StatusNotFound,
+	}
+}
+
 func NewBadRequestError(mensagem string) *RestErr {
 	return &RestErr{
 		Mensagem: mensagem,

@@ -1,12 +1,15 @@
 package repository
 
-import "controle-notas/src/models"
+import (
+	"controle-notas/src/configuration/rest_err"
+	"controle-notas/src/models"
+)
 
 type TurmaRepository interface {
-	Save(turma models.Turma) error
-	Update(turma models.Turma) error
-	Delete(turmaId uint) error
-	FindById(turmaId uint) (models.Turma, error)
-	FindAll() ([]models.Turma, error)
-	RemoveAlunoTurma(turmaId uint, alunoId uint) error
+	Save(turma models.Turma) *rest_err.RestErr
+	Update(turma models.Turma) *rest_err.RestErr
+	Delete(turmaId uint) *rest_err.RestErr
+	FindById(turmaId uint) (models.Turma, *rest_err.RestErr)
+	FindAll() ([]models.Turma, *rest_err.RestErr)
+	RemoveAlunoTurma(turmaId uint, alunoId uint) *rest_err.RestErr
 }

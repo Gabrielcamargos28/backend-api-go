@@ -150,7 +150,7 @@ func (controller *TurmaController) AdicionarAlunos(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, webResponse)
 }
 
-func (controller *TurmaController) RemoveAlunoDaTurma(ctx *gin.Context) {
+func (controller *TurmaController) RemoverAlunoTurma(ctx *gin.Context) {
 	var requisicao request.RemoverAlunoTurmaRequest
 	if err := ctx.ShouldBindJSON(&requisicao); err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
