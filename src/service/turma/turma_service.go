@@ -6,11 +6,11 @@ import (
 )
 
 type TurmaService interface {
-	Create(turma request.TurmaRequest)
-	Update(turma request.AtualizaTurmaRequest)
-	Delete(turmaId uint) (response.TurmaResponse, error)
+	Create(turma request.TurmaRequest) error
+	Update(turma request.AtualizaTurmaRequest) error
+	Delete(turmaId uint) error
 	FindById(turmaId uint) (response.TurmaResponse, error)
-	FindAll() []response.TurmaResponse
-	AdicionarAlunos(turma request.AdicioanrAlunosTurma)
+	FindAll() ([]response.TurmaResponse, error)
+	AdicionarAlunos(turma request.AdicioanrAlunosTurma) error
 	RemoveAlunoTurma(alunoId uint, turmaId uint) error
 }

@@ -21,76 +21,80 @@ func NewTurmaController(service turma.TurmaService) *TurmaController {
 }
 
 func (controller *TurmaController) Create(ctx *gin.Context) {
-
 	var criarRequisicao request.TurmaRequest
 	if err := ctx.ShouldBindJSON(&criarRequisicao); err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	controller.TurmaService.Create(criarRequisicao)
+
+	err := controller.TurmaService.Create(criarRequisicao)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
 
 	webResponse := data.ResponseApi{
 		Code:   http.StatusOK,
 		Status: "Ok",
 		Data:   criarRequisicao,
 	}
-	ctx.Header("Content-Type", "application/json")
 	ctx.JSON(http.StatusOK, webResponse)
 }
 
 func (controller *TurmaController) Update(ctx *gin.Context) {
-
 	turmaId := ctx.Param("turmaId")
 	id, err := strconv.ParseUint(turmaId, 10, 32)
-
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": "ID inválido"})
 		return
 	}
 
-	var requisicaoAtualizar = request.AtualizaTurmaRequest{}
+	var requisicaoAtualizar request.AtualizaTurmaRequest
 	if err := ctx.ShouldBindJSON(&requisicaoAtualizar); err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 	requisicaoAtualizar.Id = uint(id)
 
-	controller.TurmaService.Update(requisicaoAtualizar)
+	err = controller.TurmaService.Update(requisicaoAtualizar)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
 
 	webResponse := data.ResponseApi{
 		Code:   http.StatusOK,
 		Status: "Ok",
 		Data:   requisicaoAtualizar,
 	}
-	ctx.Header("Content-Type", "application/json")
 	ctx.JSON(http.StatusOK, webResponse)
 }
 
 func (controller *TurmaController) Delete(ctx *gin.Context) {
-
 	turmaId := ctx.Param("turmaId")
-
 	id, err := strconv.ParseUint(turmaId, 10, 32)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": "ID inválido"})
 		return
 	}
-	controller.TurmaService.Delete(uint(id))
+
+	err = controller.TurmaService.Delete(uint(id))
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
 
 	webResponse := data.ResponseApi{
 		Code:   http.StatusOK,
 		Status: "Ok",
 		Data:   nil,
 	}
-	ctx.Header("Content-Type", "application/json")
 	ctx.JSON(http.StatusOK, webResponse)
 }
 
 func (controller *TurmaController) FindById(ctx *gin.Context) {
-
 	turmaId := ctx.Param("turmaId")
 	id, err := strconv.ParseUint(turmaId, 10, 32)
-
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": "ID inválido"})
 		return
@@ -98,46 +102,54 @@ func (controller *TurmaController) FindById(ctx *gin.Context) {
 
 	turmaResponse, err := controller.TurmaService.FindById(uint(id))
 	if err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": "ID inválido"})
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
+
 	webResponse := data.ResponseApi{
 		Code:   http.StatusOK,
 		Status: "Ok",
 		Data:   turmaResponse,
 	}
-	ctx.Header("Content-Type", "application/json")
 	ctx.JSON(http.StatusOK, webResponse)
 }
 
 func (controller *TurmaController) FindAll(ctx *gin.Context) {
+	turmaResponse, err := controller.TurmaService.FindAll()
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
 
-	turmaResponse := controller.TurmaService.FindAll()
 	webResponse := data.ResponseApi{
 		Code:   http.StatusOK,
 		Status: "Ok",
 		Data:   turmaResponse,
 	}
-	ctx.Header("Content-Type", "application/json")
 	ctx.JSON(http.StatusOK, webResponse)
 }
+
 func (controller *TurmaController) AdicionarAlunos(ctx *gin.Context) {
 	var requisicao request.AdicioanrAlunosTurma
 	if err := ctx.ShouldBindJSON(&requisicao); err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"erro: ": err.Error()})
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	controller.TurmaService.AdicionarAlunos(requisicao)
+	err := controller.TurmaService.AdicionarAlunos(requisicao)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
 
 	webResponse := data.ResponseApi{
 		Code:   http.StatusOK,
 		Status: "Ok",
 		Data:   requisicao,
 	}
-	ctx.Header("Content-Type", "application/json")
 	ctx.JSON(http.StatusOK, webResponse)
 }
+
 func (controller *TurmaController) RemoveAlunoDaTurma(ctx *gin.Context) {
 	var requisicao request.RemoverAlunoTurmaRequest
 	if err := ctx.ShouldBindJSON(&requisicao); err != nil {
@@ -149,13 +161,14 @@ func (controller *TurmaController) RemoveAlunoDaTurma(ctx *gin.Context) {
 		err := controller.TurmaService.RemoveAlunoTurma(alunoId, requisicao.TurmaId)
 		if err != nil {
 			ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Erro ao remover aluno da turma"})
+			return
 		}
 	}
+
 	webResponse := data.ResponseApi{
 		Code:   http.StatusOK,
 		Status: "Ok",
 		Data:   requisicao,
 	}
-
 	ctx.JSON(http.StatusOK, webResponse)
 }

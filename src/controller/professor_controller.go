@@ -14,20 +14,24 @@ type ProfessorController struct {
 	ProfessorService professor.ProfessorService
 }
 
-func NewProfessorController(sevice professor.ProfessorService) *ProfessorController {
+func NewProfessorController(service professor.ProfessorService) *ProfessorController {
 	return &ProfessorController{
-		ProfessorService: sevice,
+		ProfessorService: service,
 	}
 }
 
 func (controller *ProfessorController) Create(ctx *gin.Context) {
-
 	var criarRequisicao request.ProfessorRequest
 	if err := ctx.ShouldBindJSON(&criarRequisicao); err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	controller.ProfessorService.Create(criarRequisicao)
+
+	err := controller.ProfessorService.Create(criarRequisicao)
+	if err != nil {
+		ctx.JSON(err.Campo, gin.H{"error": err.Mensagem})
+		return
+	}
 
 	webResponse := data.ResponseApi{
 		Code:   http.StatusOK,
@@ -39,10 +43,8 @@ func (controller *ProfessorController) Create(ctx *gin.Context) {
 }
 
 func (controller *ProfessorController) Update(ctx *gin.Context) {
-
 	professorId := ctx.Param("professorId")
 	id, err := strconv.ParseUint(professorId, 10, 32)
-
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": "ID inválido"})
 		return
@@ -55,7 +57,11 @@ func (controller *ProfessorController) Update(ctx *gin.Context) {
 	}
 	requisicaoAtualizar.Id = uint(id)
 
-	controller.ProfessorService.Update(requisicaoAtualizar)
+	err = controller.ProfessorService.Update(requisicaoAtualizar)
+	if err == nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "erro"})
+		return
+	}
 
 	webResponse := data.ResponseApi{
 		Code:   http.StatusOK,
@@ -67,15 +73,18 @@ func (controller *ProfessorController) Update(ctx *gin.Context) {
 }
 
 func (controller *ProfessorController) Delete(ctx *gin.Context) {
-
 	professorId := ctx.Param("professorId")
-
 	id, err := strconv.ParseUint(professorId, 10, 32)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": "ID inválido"})
 		return
 	}
-	controller.ProfessorService.Delete(uint(id))
+
+	err = controller.ProfessorService.Delete(uint(id))
+	if err != nil {
+		ctx.JSON(http.StatusBadGateway, gin.H{"error": "erro"})
+		return
+	}
 
 	webResponse := data.ResponseApi{
 		Code:   http.StatusOK,
@@ -87,16 +96,18 @@ func (controller *ProfessorController) Delete(ctx *gin.Context) {
 }
 
 func (controller *ProfessorController) FindById(ctx *gin.Context) {
-
 	professorId := ctx.Param("professorId")
 	id, err := strconv.ParseUint(professorId, 10, 32)
-
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": "ID inválido"})
 		return
 	}
 
-	professorResponse := controller.ProfessorService.FindById(uint(id))
+	professorResponse, err := controller.ProfessorService.FindById(uint(id))
+	if err == nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Erro"})
+		return
+	}
 
 	webResponse := data.ResponseApi{
 		Code:   http.StatusOK,
@@ -108,8 +119,12 @@ func (controller *ProfessorController) FindById(ctx *gin.Context) {
 }
 
 func (controller *ProfessorController) FindAll(ctx *gin.Context) {
+	professorResponse, err := controller.ProfessorService.FindAll()
+	if err != nil {
+		ctx.JSON(err.Campo, gin.H{"error": err.Mensagem})
+		return
+	}
 
-	professorResponse := controller.ProfessorService.FindAll()
 	webResponse := data.ResponseApi{
 		Code:   http.StatusOK,
 		Status: "Ok",

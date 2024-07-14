@@ -1,6 +1,7 @@
 package repository
 
 import (
+	"controle-notas/src/configuration/rest_err"
 	"controle-notas/src/data/professor/request"
 	"controle-notas/src/models"
 
@@ -15,33 +16,50 @@ func NewProfessorRepositoryImple(Db *gorm.DB) ProfessorRepository {
 	return &ProfessorRepositoryImple{Db: Db}
 }
 
-func (p *ProfessorRepositoryImple) Delete(professorId uint) {
+func (p *ProfessorRepositoryImple) Delete(professorId uint) *rest_err.RestErr {
 	var professor models.Professor
-	p.Db.Where("id = ?", professorId).Delete(&professor)
+	if result := p.Db.Where("id = ?", professorId).Delete(&professor); result.Error != nil {
+		return rest_err.NewInternalServerError("Erro ao deletar professor", nil)
+	}
+	return nil
 }
 
-func (p *ProfessorRepositoryImple) FindAll() []models.Professor {
+func (p *ProfessorRepositoryImple) FindAll() ([]models.Professor, *rest_err.RestErr) {
 	var professores []models.Professor
-	p.Db.Find(&professores)
-	return professores
+	resultado := p.Db.Find(&professores)
+	if resultado.Error != nil {
+		return nil, rest_err.NewInternalServerError("Erro ao buscar professores", nil)
+	}
+	return professores, nil
 }
 
-func (p *ProfessorRepositoryImple) FindById(professorId uint) (models.Professor, error) {
+func (p *ProfessorRepositoryImple) FindById(professorId uint) (models.Professor, *rest_err.RestErr) {
 	var professor models.Professor
-	err := p.Db.First(&professor, professorId).Error
-	return professor, err
+	resultado := p.Db.First(&professor, professorId)
+	if resultado.Error != nil {
+		if resultado.Error == gorm.ErrRecordNotFound {
+			return professor, rest_err.NewInternalServerError("Professor não encontrado", nil)
+		}
+		return professor, rest_err.NewInternalServerError("Erro ao buscar professor", nil)
+	}
+	return professor, nil
 }
 
-func (p *ProfessorRepositoryImple) Save(professor models.Professor) {
-	p.Db.Create(&professor)
+func (p *ProfessorRepositoryImple) Save(professor models.Professor) *rest_err.RestErr {
+	if result := p.Db.Create(&professor); result.Error != nil {
+		return rest_err.NewInternalServerError("Erro ao salvar professor", nil)
+	}
+	return nil
 }
 
-func (p *ProfessorRepositoryImple) Update(professor models.Professor) {
+func (p *ProfessorRepositoryImple) Update(professor models.Professor) *rest_err.RestErr {
 	var updateProfessor = request.AtualizarProfessorRequest{
 		Id:    professor.Id,
 		Nome:  professor.Nome,
 		Email: professor.Email,
 	}
-	p.Db.Model(&professor).Updates(updateProfessor)
-
+	if result := p.Db.Model(&professor).Updates(updateProfessor); result.Error != nil {
+		return rest_err.NewInternalServerError("Erro ao atualizar professor", nil)
+	}
+	return nil
 }
