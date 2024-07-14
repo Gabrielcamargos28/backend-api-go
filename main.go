@@ -25,7 +25,7 @@ func main() {
 
 	db := database.DatabaseConnection()
 
-	db.AutoMigrate(&models.Professor{}, &models.Turma{})
+	db.AutoMigrate(&models.Professor{}, &models.Turma{}, &models.Aluno{})
 
 	validate := validator.New()
 
@@ -34,7 +34,7 @@ func main() {
 	alunoRepository := repository.NewAlunoRepositoryImple(db)
 
 	professorService := professor.NewProfessorServiceImple(professorRepository, validate)
-	turmaService := turma.NewTurmaServiceImple(turmaRepository, validate)
+	turmaService := turma.NewTurmaServiceImple(turmaRepository, alunoRepository, validate)
 	alunoService := aluno.NewAlunoServiceImple(alunoRepository, validate)
 
 	professorController := controller.NewProfessorController(professorService)

@@ -11,4 +11,5 @@ type TurmaService interface {
 	Delete(turmaId uint)
 	FindById(turmaId uint) response.TurmaResponse
 	FindAll() []response.TurmaResponse
+	AdicionarAlunos(turma request.AdicioanrAlunosTurma)
 }

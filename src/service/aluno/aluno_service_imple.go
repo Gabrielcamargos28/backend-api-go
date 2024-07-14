@@ -23,7 +23,7 @@ func NewAlunoServiceImple(alunoRepository repository.AlunoRepository, validate *
 }
 
 func (a *AlunoServiceImple) Create(aluno request.AlunoRequest) {
-	// Validando a requisição
+
 	if err := a.validate.Struct(aluno); err != nil {
 		log.Printf("Erro de validação: %v", err)
 		return

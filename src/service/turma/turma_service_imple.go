@@ -12,12 +12,14 @@ import (
 
 type TurmaServiceImple struct {
 	TurmaRepository repository.TurmaRepository
+	AlunoRepository repository.AlunoRepository
 	validate        *validator.Validate
 }
 
-func NewTurmaServiceImple(turmaRepository repository.TurmaRepository, validate *validator.Validate) TurmaService {
+func NewTurmaServiceImple(turmaRepository repository.TurmaRepository, alunoRepository repository.AlunoRepository, validate *validator.Validate) TurmaService {
 	return &TurmaServiceImple{
 		TurmaRepository: turmaRepository,
+		AlunoRepository: alunoRepository,
 		validate:        validate,
 	}
 }
@@ -81,4 +83,31 @@ func (t *TurmaServiceImple) Update(turma request.AtualizaTurmaRequest) {
 	turmaData.Ano = turma.Ano
 	turmaData.ProfessorId = turma.ProfessorId
 	t.TurmaRepository.Update(turmaData)
+}
+
+func (t *TurmaServiceImple) AdicionarAlunos(request request.AdicioanrAlunosTurma) {
+	err := t.validate.Struct(request)
+
+	if err != nil {
+		log.Printf("Erro ao validar requisição: %v", err)
+		return
+	}
+
+	turma, err := t.TurmaRepository.FindById(request.TurmaId)
+	if err != nil {
+		log.Printf("Erro ao buscar a turma: %v", err)
+		return
+	}
+	for _, alunoId := range request.AlunosId {
+		aluno, err := t.AlunoRepository.FindById(alunoId)
+		if err != nil {
+			log.Printf("Erro ao buscar aluno: %v", err)
+			return
+		}
+		turma.Alunos = append(turma.Alunos, aluno)
+	}
+	t.TurmaRepository.Update(turma)
+	if err != nil {
+		log.Printf("Erro ao atualizar turma: %v", err)
+	}
 }

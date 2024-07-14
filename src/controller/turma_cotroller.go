@@ -118,3 +118,18 @@ func (controller *TurmaController) FindAll(ctx *gin.Context) {
 	ctx.Header("Content-Type", "application/json")
 	ctx.JSON(http.StatusOK, webResponse)
 }
+func (controller *TurmaController) AdicionarAlunos(ctx *gin.Context) {
+	var requisicao request.AdicioanrAlunosTurma
+	if err := ctx.ShouldBindJSON(&requisicao); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"erro: ": err.Error()})
+		return
+	}
+	controller.TurmaService.AdicionarAlunos(requisicao)
+	webResponse := data.ResponseApi{
+		Code:   http.StatusOK,
+		Status: "Ok",
+		Data:   requisicao,
+	}
+	ctx.Header("Content-Type", "application/json")
+	ctx.JSON(http.StatusOK, webResponse)
+}
