@@ -133,3 +133,6 @@ func (controller *TurmaController) AdicionarAlunos(ctx *gin.Context) {
 	ctx.Header("Content-Type", "application/json")
 	ctx.JSON(http.StatusOK, webResponse)
 }
+func (controller *TurmaController) RemoverAlunoTurma(ctx *gin.Context) {
+
+}
