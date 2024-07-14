@@ -133,6 +133,25 @@ func (controller *TurmaController) AdicionarAlunos(ctx *gin.Context) {
 	ctx.Header("Content-Type", "application/json")
 	ctx.JSON(http.StatusOK, webResponse)
 }
-func (controller *TurmaController) RemoverAlunoTurma(ctx *gin.Context) {
+func (tc *TurmaController) RemoveAlunoDaTurma(ctx *gin.Context) {
+	var requisicao request.RemoverAlunoTurmaRequest
+	if err := ctx.ShouldBindJSON(&requisicao); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
 
+	for _, alunoId := range requisicao.AlunosId {
+		err := tc.TurmaService.RemoveAlunoTurma(alunoId, requisicao.TurmaId)
+		if err != nil {
+			ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Erro ao remover aluno da turma"})
+			return
+		}
+	}
+	webResponse := data.ResponseApi{
+		Code:   http.StatusOK,
+		Status: "Ok",
+		Data:   requisicao,
+	}
+
+	ctx.JSON(http.StatusOK, webResponse)
 }

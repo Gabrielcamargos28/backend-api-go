@@ -29,6 +29,7 @@ func NewRouter(professorController *controller.ProfessorController, turmaControl
 	turmaRouter.POST("/criarTurma", turmaController.Create)
 	turmaRouter.PUT("/atualizar/:turmaId", turmaController.Update)
 	turmaRouter.PUT("/adicionarAlunos", turmaController.AdicionarAlunos)
+	turmaRouter.PUT("/removerAluno", turmaController.RemoveAlunoDaTurma)
 	turmaRouter.DELETE("/deletar/:turmaId", turmaController.Delete)
 
 	alunoRouter := baseRouter.Group("/aluno")

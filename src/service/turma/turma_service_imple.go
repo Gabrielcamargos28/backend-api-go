@@ -124,7 +124,7 @@ func (t *TurmaServiceImple) RemoveAlunoTurma(alunoId uint, turmaId uint) error {
 		}
 	}
 
-	t.TurmaRepository.Update(turma)
+	err = t.TurmaRepository.RemoveAlunoTurma(turmaId, alunoId)
 	if err != nil {
 		return err
 	}
