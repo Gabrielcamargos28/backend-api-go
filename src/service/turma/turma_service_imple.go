@@ -109,10 +109,6 @@ func (t *TurmaServiceImple) AdicionarAlunos(request request.AdicioanarAlunosTurm
 	}
 
 	turma, err := t.TurmaRepository.FindById(request.TurmaId)
-	/*if err != nil {
-		log.Printf("Erro ao buscar a turma: %v", err)
-		return rest_err.NewNotFoundError("Turma não encontrada")
-	}*/
 
 	for _, alunoId := range request.AlunosId {
 		aluno, err := t.AlunoRepository.FindById(alunoId)
@@ -124,36 +120,13 @@ func (t *TurmaServiceImple) AdicionarAlunos(request request.AdicioanarAlunosTurm
 	}
 
 	err = t.TurmaRepository.Update(turma)
-	/*if err != nil {
-		log.Printf("Erro ao atualizar turma: %v", err)
-		return rest_err.NewInternalServerError("Erro ao atualizar turma")
-	}*/
-
 	return nil
 }
 
 func (t *TurmaServiceImple) RemoveAlunoTurma(alunoId uint, turmaId uint) *rest_err.RestErr {
-	turma, err := t.TurmaRepository.FindById(turmaId)
+	err := t.TurmaRepository.RemoveAlunoTurma(turmaId, alunoId)
 	if err != nil {
-		return rest_err.NewNotFoundError("Turma não encontrada")
-	}
-
-	alunoFound := false
-	for i, aluno := range turma.Alunos {
-		if aluno.Id == alunoId {
-			turma.Alunos = append(turma.Alunos[:i], turma.Alunos[i+1:]...)
-			alunoFound = true
-			break
-		}
-	}
-
-	if !alunoFound {
-		return rest_err.NewNotFoundError("Aluno não encontrado na turma")
-	}
-
-	err = t.TurmaRepository.Update(turma)
-	if err != nil {
-		return rest_err.NewInternalServerError("Erro ao atualizar turma após remover aluno")
+		return err
 	}
 
 	return nil

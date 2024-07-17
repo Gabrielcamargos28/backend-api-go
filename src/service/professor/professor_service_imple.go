@@ -6,6 +6,7 @@ import (
 	"controle-notas/src/data/professor/response"
 	"controle-notas/src/models"
 	"controle-notas/src/repository"
+	"strings"
 
 	"log"
 
@@ -41,6 +42,9 @@ func (p *ProfessorServiceImple) Create(professor request.ProfessorRequest) *rest
 func (p *ProfessorServiceImple) Delete(professorId uint) *rest_err.RestErr {
 	err := p.ProfessorRepository.Delete(professorId)
 	if err != nil {
+		if strings.Contains(err.Error(), "violates foreign key constraint") {
+			return rest_err.NewBadRequestError("Não é possível deletar o professor pois ele está associado a uma ou mais turmas")
+		}
 		return rest_err.NewInternalServerError("Erro ao deletar o professor")
 	}
 	return nil

@@ -82,7 +82,7 @@ func (controller *ProfessorController) Delete(ctx *gin.Context) {
 
 	err = controller.ProfessorService.Delete(uint(id))
 	if err != nil {
-		ctx.JSON(http.StatusBadGateway, gin.H{"error": "erro"})
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 

@@ -4,6 +4,7 @@ import (
 	"controle-notas/src/configuration/rest_err"
 	"controle-notas/src/data/professor/request"
 	"controle-notas/src/models"
+	"strings"
 
 	"gorm.io/gorm"
 )
@@ -18,9 +19,25 @@ func NewProfessorRepositoryImple(Db *gorm.DB) ProfessorRepository {
 
 func (p *ProfessorRepositoryImple) Delete(professorId uint) *rest_err.RestErr {
 	var professor models.Professor
-	if result := p.Db.Where("id = ?", professorId).Delete(&professor); result.Error != nil {
+
+	// Primeiro, tente encontrar o professor
+	result := p.Db.Where("id = ?", professorId).First(&professor)
+	if result.Error != nil {
+		if result.Error == gorm.ErrRecordNotFound {
+			return rest_err.NewNotFoundError("Professor não encontrado")
+		}
+		return rest_err.NewInternalServerError("Erro ao buscar professor")
+	}
+
+	// Tente deletar o professor
+	result = p.Db.Delete(&professor)
+	if result.Error != nil {
+		if strings.Contains(result.Error.Error(), "violates foreign key constraint") {
+			return rest_err.NewBadRequestError("Não é possível deletar o professor pois ele está associado a uma ou mais turmas")
+		}
 		return rest_err.NewInternalServerError("Erro ao deletar professor")
 	}
+
 	return nil
 }
 
