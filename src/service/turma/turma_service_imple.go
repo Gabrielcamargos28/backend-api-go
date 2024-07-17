@@ -34,7 +34,7 @@ func (t *TurmaServiceImple) Create(turma request.TurmaRequest) *rest_err.RestErr
 	}
 	err := t.TurmaRepository.Save(turmaModel)
 	if err != nil {
-		return rest_err.NewInternalServerError("Erro ao salvar a turma", nil)
+		return rest_err.NewInternalServerError("Erro ao salvar a turma")
 	}
 	return nil
 }
@@ -42,7 +42,7 @@ func (t *TurmaServiceImple) Create(turma request.TurmaRequest) *rest_err.RestErr
 func (t *TurmaServiceImple) Delete(turmaId uint) *rest_err.RestErr {
 	err := t.TurmaRepository.Delete(turmaId)
 	if err != nil {
-		return rest_err.NewInternalServerError("Erro ao deletar turma", nil)
+		return rest_err.NewInternalServerError("Erro ao deletar turma")
 	}
 	return nil
 }
@@ -50,7 +50,7 @@ func (t *TurmaServiceImple) Delete(turmaId uint) *rest_err.RestErr {
 func (t *TurmaServiceImple) FindAll() ([]response.TurmaResponse, *rest_err.RestErr) {
 	result, err := t.TurmaRepository.FindAll()
 	if err != nil {
-		return nil, rest_err.NewInternalServerError("Erro ao buscar turmas", nil)
+		return nil, rest_err.NewInternalServerError("Erro ao buscar turmas")
 	}
 
 	var turmas []response.TurmaResponse
@@ -88,7 +88,7 @@ func (t *TurmaServiceImple) Update(turma request.AtualizaTurmaRequest) *rest_err
 	turmaData, err := t.TurmaRepository.FindById(turma.Id)
 	if err != nil {
 		log.Printf("Erro ao atualizar: %v", err)
-		return rest_err.NewInternalServerError("Erro ao buscar turma por ID", nil)
+		return rest_err.NewInternalServerError("Erro ao buscar turma por ID")
 	}
 	turmaData.Nome = turma.Nome
 	turmaData.Semestre = turma.Semestre
@@ -96,48 +96,65 @@ func (t *TurmaServiceImple) Update(turma request.AtualizaTurmaRequest) *rest_err
 	turmaData.ProfessorId = turma.ProfessorId
 	err = t.TurmaRepository.Update(turmaData)
 	if err != nil {
-		return rest_err.NewInternalServerError("Erroa o atualizar turma", nil)
+		return rest_err.NewInternalServerError("Erroa o atualizar turma")
 	}
 	return nil
 }
 
-func (t *TurmaServiceImple) AdicionarAlunos(request request.AdicioanrAlunosTurma) *rest_err.RestErr {
+func (t *TurmaServiceImple) AdicionarAlunos(request request.AdicioanarAlunosTurma) *rest_err.RestErr {
 	err := t.validate.Struct(request)
 	if err != nil {
 		log.Printf("Erro ao validar requisição: %v", err)
-		return rest_err.NewInternalServerError("Erro ao adicionar alunos a turma", nil)
+		return rest_err.NewInternalServerError("Erro ao validar requisição para adicionar alunos a turma")
 	}
 
 	turma, err := t.TurmaRepository.FindById(request.TurmaId)
-	if err != nil {
+	/*if err != nil {
 		log.Printf("Erro ao buscar a turma: %v", err)
-		return rest_err.NewInternalServerError("Erro ao buscar turma", nil)
-	}
+		return rest_err.NewNotFoundError("Turma não encontrada")
+	}*/
 
 	for _, alunoId := range request.AlunosId {
 		aluno, err := t.AlunoRepository.FindById(alunoId)
 		if err != nil {
-			log.Printf("Erro ao buscar aluno: %v", err)
-			return rest_err.NewInternalServerError("Erro ao buscar aluno", nil)
+			log.Printf("Erro ao buscar aluno com ID %d: %v", alunoId, err)
+			return rest_err.NewNotFoundError("Aluno não encontrado")
 		}
 		turma.Alunos = append(turma.Alunos, aluno)
 	}
 
-	return t.TurmaRepository.Update(turma)
+	err = t.TurmaRepository.Update(turma)
+	/*if err != nil {
+		log.Printf("Erro ao atualizar turma: %v", err)
+		return rest_err.NewInternalServerError("Erro ao atualizar turma")
+	}*/
+
+	return nil
 }
 
 func (t *TurmaServiceImple) RemoveAlunoTurma(alunoId uint, turmaId uint) *rest_err.RestErr {
 	turma, err := t.TurmaRepository.FindById(turmaId)
 	if err != nil {
-		return rest_err.NewInternalServerError("Erro ao buscar turma", nil)
+		return rest_err.NewNotFoundError("Turma não encontrada")
 	}
 
+	alunoFound := false
 	for i, aluno := range turma.Alunos {
 		if aluno.Id == alunoId {
 			turma.Alunos = append(turma.Alunos[:i], turma.Alunos[i+1:]...)
+			alunoFound = true
 			break
 		}
 	}
 
-	return t.TurmaRepository.RemoveAlunoTurma(turmaId, alunoId)
+	if !alunoFound {
+		return rest_err.NewNotFoundError("Aluno não encontrado na turma")
+	}
+
+	err = t.TurmaRepository.Update(turma)
+	if err != nil {
+		return rest_err.NewInternalServerError("Erro ao atualizar turma após remover aluno")
+	}
+
+	return nil
 }

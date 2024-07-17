@@ -50,12 +50,11 @@ func NewBadValidationError(mensagem string, causas []Causas) *RestErr {
 		Causas:   causas,
 	}
 }
-func NewInternalServerError(mensagem string, causas []Causas) *RestErr {
+func NewInternalServerError(mensagem string) *RestErr {
 	return &RestErr{
 		Mensagem: mensagem,
 		Err:      "Erro interno",
 		Campo:    http.StatusInternalServerError,
-		Causas:   causas,
 	}
 }
 func NewUnauthorizedRequestError(mensagem string) *RestErr {

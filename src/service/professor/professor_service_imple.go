@@ -33,7 +33,7 @@ func (p *ProfessorServiceImple) Create(professor request.ProfessorRequest) *rest
 
 	err := p.ProfessorRepository.Save(professorModel)
 	if err != nil {
-		return rest_err.NewInternalServerError("Erro ao salvar o professor", nil)
+		return rest_err.NewInternalServerError("Erro ao salvar o professor")
 	}
 	return nil
 }
@@ -41,7 +41,7 @@ func (p *ProfessorServiceImple) Create(professor request.ProfessorRequest) *rest
 func (p *ProfessorServiceImple) Delete(professorId uint) *rest_err.RestErr {
 	err := p.ProfessorRepository.Delete(professorId)
 	if err != nil {
-		return rest_err.NewInternalServerError("Erro ao deletar o professor", nil)
+		return rest_err.NewInternalServerError("Erro ao deletar o professor")
 	}
 	return nil
 }
@@ -49,7 +49,7 @@ func (p *ProfessorServiceImple) Delete(professorId uint) *rest_err.RestErr {
 func (p *ProfessorServiceImple) FindAll() ([]response.ProfessorResponse, *rest_err.RestErr) {
 	result, err := p.ProfessorRepository.FindAll()
 	if err != nil {
-		return nil, rest_err.NewInternalServerError("Erro ao buscar todos os professores", nil)
+		return nil, rest_err.NewInternalServerError("Erro ao buscar todos os professores")
 	}
 
 	var professors []response.ProfessorResponse
@@ -67,7 +67,7 @@ func (p *ProfessorServiceImple) FindById(professorId uint) (response.ProfessorRe
 	professorData, err := p.ProfessorRepository.FindById(professorId)
 	if err != nil {
 		log.Printf("Erro ao buscar professor por ID %d: %v", professorId, err)
-		return response.ProfessorResponse{}, rest_err.NewInternalServerError("Erro ao buscar professor por ID", nil)
+		return response.ProfessorResponse{}, rest_err.NewInternalServerError("Erro ao buscar professor por ID")
 	}
 
 	professorResponse := response.ProfessorResponse{
@@ -80,7 +80,7 @@ func (p *ProfessorServiceImple) Update(professor request.AtualizarProfessorReque
 	professorData, err := p.ProfessorRepository.FindById(professor.Id)
 	if err != nil {
 		log.Printf("Erro ao atualizar professor com ID %d: %v", professor.Id, err)
-		return rest_err.NewInternalServerError("Erro ao buscar professor para atualização", nil)
+		return rest_err.NewInternalServerError("Erro ao buscar professor para atualização")
 	}
 
 	professorData.Nome = professor.Nome
@@ -89,7 +89,7 @@ func (p *ProfessorServiceImple) Update(professor request.AtualizarProfessorReque
 
 	err = p.ProfessorRepository.Update(professorData)
 	if err != nil {
-		return rest_err.NewInternalServerError("Erro ao atualizar o professor", nil)
+		return rest_err.NewInternalServerError("Erro ao atualizar o professor")
 	}
 	return nil
 }

@@ -12,6 +12,6 @@ type TurmaService interface {
 	Delete(turmaId uint) *rest_err.RestErr
 	FindById(turmaId uint) (response.TurmaResponse, *rest_err.RestErr)
 	FindAll() ([]response.TurmaResponse, *rest_err.RestErr)
-	AdicionarAlunos(turma request.AdicioanrAlunosTurma) *rest_err.RestErr
+	AdicionarAlunos(turma request.AdicioanarAlunosTurma) *rest_err.RestErr
 	RemoveAlunoTurma(alunoId uint, turmaId uint) *rest_err.RestErr
 }

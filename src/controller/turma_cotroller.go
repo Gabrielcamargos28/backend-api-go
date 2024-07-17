@@ -130,7 +130,7 @@ func (controller *TurmaController) FindAll(ctx *gin.Context) {
 }
 
 func (controller *TurmaController) AdicionarAlunos(ctx *gin.Context) {
-	var requisicao request.AdicioanrAlunosTurma
+	var requisicao request.AdicioanarAlunosTurma
 	if err := ctx.ShouldBindJSON(&requisicao); err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
@@ -138,7 +138,7 @@ func (controller *TurmaController) AdicionarAlunos(ctx *gin.Context) {
 
 	err := controller.TurmaService.AdicionarAlunos(requisicao)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Mensagem})
 		return
 	}
 

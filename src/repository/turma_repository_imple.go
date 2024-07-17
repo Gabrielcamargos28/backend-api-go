@@ -3,6 +3,7 @@ package repository
 import (
 	"controle-notas/src/configuration/rest_err"
 	"controle-notas/src/models"
+	"log"
 
 	"gorm.io/gorm"
 )
@@ -17,7 +18,7 @@ func NewTurmaRepositoryImple(Db *gorm.DB) TurmaRepository {
 
 func (t *TurmaRepositoryImple) Save(turma models.Turma) *rest_err.RestErr {
 	if result := t.Db.Create(&turma); result.Error != nil {
-		return rest_err.NewInternalServerError("Erro ao salvar turma", nil)
+		return rest_err.NewInternalServerError("Erro ao salvar turma")
 	}
 	return nil
 }
@@ -29,7 +30,7 @@ func (t *TurmaRepositoryImple) Update(turma models.Turma) *rest_err.RestErr {
 		Ano:         turma.Ano,
 		ProfessorId: turma.ProfessorId,
 	}); result.Error != nil {
-		return rest_err.NewInternalServerError("Erro ao atualizar turma", nil)
+		return rest_err.NewInternalServerError("Erro ao atualizar turma")
 	}
 	return nil
 }
@@ -37,7 +38,7 @@ func (t *TurmaRepositoryImple) Update(turma models.Turma) *rest_err.RestErr {
 func (t *TurmaRepositoryImple) Delete(turmaId uint) *rest_err.RestErr {
 	var turma models.Turma
 	if result := t.Db.Where("id = ?", turmaId).Delete(&turma); result.Error != nil {
-		return rest_err.NewInternalServerError("Erro ao deletar turma", nil)
+		return rest_err.NewInternalServerError("Erro ao deletar turma")
 	}
 	return nil
 }
@@ -47,10 +48,13 @@ func (t *TurmaRepositoryImple) FindById(turmaId uint) (models.Turma, *rest_err.R
 	result := t.Db.First(&turma, turmaId)
 	if result.Error != nil {
 		if result.Error == gorm.ErrRecordNotFound {
+			log.Printf("olá")
 			return turma, rest_err.NewNotFoundError("Turma não encontrada")
 		}
-		return turma, rest_err.NewInternalServerError("Erro ao buscar turma", nil)
+		log.Printf("olá")
+		return turma, rest_err.NewInternalServerError("Erro ao buscar turma")
 	}
+	log.Printf("olá")
 	return turma, nil
 }
 
@@ -58,7 +62,7 @@ func (t *TurmaRepositoryImple) FindAll() ([]models.Turma, *rest_err.RestErr) {
 	var turmas []models.Turma
 	result := t.Db.Preload("Professor").Find(&turmas)
 	if result.Error != nil {
-		return nil, rest_err.NewInternalServerError("Erro ao buscar turmas", nil)
+		return nil, rest_err.NewInternalServerError("Erro ao buscar turmas")
 	}
 	return turmas, nil
 }
@@ -69,7 +73,7 @@ func (t *TurmaRepositoryImple) RemoveAlunoTurma(turmaId uint, alunoId uint) *res
 		if result.Error == gorm.ErrRecordNotFound {
 			return rest_err.NewNotFoundError("Turma não encontrada")
 		}
-		return rest_err.NewInternalServerError("Erro ao buscar turma", nil)
+		return rest_err.NewInternalServerError("Erro ao buscar turma")
 	}
 
 	var updatedAlunos []models.Aluno
@@ -81,7 +85,7 @@ func (t *TurmaRepositoryImple) RemoveAlunoTurma(turmaId uint, alunoId uint) *res
 	turma.Alunos = updatedAlunos
 
 	if err := t.Db.Model(&turma).Association("Alunos").Replace(&turma.Alunos); err != nil {
-		return rest_err.NewInternalServerError("Erro ao atualizar alunos da turma", nil)
+		return rest_err.NewInternalServerError("Erro ao atualizar alunos da turma")
 	}
 
 	return nil
