@@ -1,14 +1,13 @@
 package aluno
 
 import (
-	"controle-notas/src/data/aluno/request"
-	"controle-notas/src/data/aluno/response"
+	"controle-notas/src/data"
 )
 
 type AlunoService interface {
-	Create(aluno request.AlunoRequest)
-	Update(aluno request.AtualizarAlunoRequest)
+	Create(aluno data.AlunoRequest)
+	Update(aluno data.AtualizarAlunoRequest)
 	Delete(alunoId uint)
-	FindById(aluno uint) response.AlunoResponse
-	FindAll() []response.AlunoResponse
+	FindById(aluno uint) data.AlunoResponse
+	FindAll() []data.AlunoResponse
 }

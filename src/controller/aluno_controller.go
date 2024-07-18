@@ -2,8 +2,6 @@ package controller
 
 import (
 	"controle-notas/src/data"
-	"controle-notas/src/data/aluno/request"
-
 	"controle-notas/src/service/aluno"
 	"net/http"
 	"strconv"
@@ -23,7 +21,7 @@ func NewAlunoController(sevice aluno.AlunoService) *AlunoController {
 
 func (controller *AlunoController) Create(ctx *gin.Context) {
 
-	var criarRequisicao request.AlunoRequest
+	var criarRequisicao data.AlunoRequest
 	if err := ctx.ShouldBindJSON(&criarRequisicao); err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
@@ -49,7 +47,7 @@ func (controller *AlunoController) Update(ctx *gin.Context) {
 		return
 	}
 
-	var requisicaoAtualizar = request.AtualizarAlunoRequest{}
+	var requisicaoAtualizar = data.AtualizarAlunoRequest{}
 	if err := ctx.ShouldBindJSON(&requisicaoAtualizar); err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return

@@ -1,7 +1,7 @@
 package repository
 
 import (
-	"controle-notas/src/data/aluno/request"
+	"controle-notas/src/data"
 	"controle-notas/src/models"
 
 	"gorm.io/gorm"
@@ -37,7 +37,7 @@ func (a *AlunoRepositoryImple) Save(aluno models.Aluno) {
 }
 
 func (a *AlunoRepositoryImple) Update(aluno models.Aluno) {
-	var updateAluno = request.AtualizarAlunoRequest{
+	var updateAluno = data.AtualizarAlunoRequest{
 		Id:        aluno.Id,
 		Nome:      aluno.Nome,
 		Matricula: aluno.Matricula,

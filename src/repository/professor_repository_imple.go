@@ -2,7 +2,8 @@ package repository
 
 import (
 	"controle-notas/src/configuration/rest_err"
-	"controle-notas/src/data/professor/request"
+	"controle-notas/src/data"
+
 	"controle-notas/src/models"
 	"strings"
 
@@ -20,7 +21,6 @@ func NewProfessorRepositoryImple(Db *gorm.DB) ProfessorRepository {
 func (p *ProfessorRepositoryImple) Delete(professorId uint) *rest_err.RestErr {
 	var professor models.Professor
 
-	// Primeiro, tente encontrar o professor
 	result := p.Db.Where("id = ?", professorId).First(&professor)
 	if result.Error != nil {
 		if result.Error == gorm.ErrRecordNotFound {
@@ -29,7 +29,6 @@ func (p *ProfessorRepositoryImple) Delete(professorId uint) *rest_err.RestErr {
 		return rest_err.NewInternalServerError("Erro ao buscar professor")
 	}
 
-	// Tente deletar o professor
 	result = p.Db.Delete(&professor)
 	if result.Error != nil {
 		if strings.Contains(result.Error.Error(), "violates foreign key constraint") {
@@ -70,7 +69,7 @@ func (p *ProfessorRepositoryImple) Save(professor models.Professor) *rest_err.Re
 }
 
 func (p *ProfessorRepositoryImple) Update(professor models.Professor) *rest_err.RestErr {
-	var updateProfessor = request.AtualizarProfessorRequest{
+	var updateProfessor = data.AtualizarProfessorRequest{
 		Id:    professor.Id,
 		Nome:  professor.Nome,
 		Email: professor.Email,

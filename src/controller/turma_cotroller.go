@@ -2,7 +2,6 @@ package controller
 
 import (
 	"controle-notas/src/data"
-	"controle-notas/src/data/turma/request"
 	"controle-notas/src/service/turma"
 	"net/http"
 	"strconv"
@@ -21,7 +20,7 @@ func NewTurmaController(service turma.TurmaService) *TurmaController {
 }
 
 func (controller *TurmaController) Create(ctx *gin.Context) {
-	var criarRequisicao request.TurmaRequest
+	var criarRequisicao data.TurmaRequest
 	if err := ctx.ShouldBindJSON(&criarRequisicao); err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
@@ -49,7 +48,7 @@ func (controller *TurmaController) Update(ctx *gin.Context) {
 		return
 	}
 
-	var requisicaoAtualizar request.AtualizaTurmaRequest
+	var requisicaoAtualizar data.AtualizaTurmaRequest
 	if err := ctx.ShouldBindJSON(&requisicaoAtualizar); err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
@@ -130,7 +129,7 @@ func (controller *TurmaController) FindAll(ctx *gin.Context) {
 }
 
 func (controller *TurmaController) AdicionarAlunos(ctx *gin.Context) {
-	var requisicao request.AdicioanarAlunosTurma
+	var requisicao data.AdicioanarAlunosTurma
 	if err := ctx.ShouldBindJSON(&requisicao); err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
@@ -151,7 +150,7 @@ func (controller *TurmaController) AdicionarAlunos(ctx *gin.Context) {
 }
 
 func (controller *TurmaController) RemoverAlunoTurma(ctx *gin.Context) {
-	var requisicao request.RemoverAlunoTurmaRequest
+	var requisicao data.RemoverAlunoTurmaRequest
 	if err := ctx.ShouldBindJSON(&requisicao); err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return

@@ -1,8 +1,7 @@
 package aluno
 
 import (
-	"controle-notas/src/data/aluno/request"
-	"controle-notas/src/data/aluno/response"
+	"controle-notas/src/data"
 	"controle-notas/src/models"
 	"controle-notas/src/repository"
 	"log"
@@ -22,7 +21,7 @@ func NewAlunoServiceImple(alunoRepository repository.AlunoRepository, validate *
 	}
 }
 
-func (a *AlunoServiceImple) Create(aluno request.AlunoRequest) {
+func (a *AlunoServiceImple) Create(aluno data.AlunoRequest) {
 
 	if err := a.validate.Struct(aluno); err != nil {
 		log.Printf("Erro de validação: %v", err)
@@ -40,11 +39,11 @@ func (a *AlunoServiceImple) Delete(alunoId uint) {
 	a.AlunoRepository.Delete(alunoId)
 }
 
-func (a *AlunoServiceImple) FindAll() []response.AlunoResponse {
+func (a *AlunoServiceImple) FindAll() []data.AlunoResponse {
 	result := a.AlunoRepository.FindAll()
-	var alunos []response.AlunoResponse
+	var alunos []data.AlunoResponse
 	for _, value := range result {
-		aluno := response.AlunoResponse{
+		aluno := data.AlunoResponse{
 			Id:   value.Id,
 			Nome: value.Nome,
 		}
@@ -53,20 +52,20 @@ func (a *AlunoServiceImple) FindAll() []response.AlunoResponse {
 	return alunos
 }
 
-func (a *AlunoServiceImple) FindById(alunoId uint) response.AlunoResponse {
+func (a *AlunoServiceImple) FindById(alunoId uint) data.AlunoResponse {
 	alunoData, err := a.AlunoRepository.FindById(alunoId)
 	if err != nil {
 		log.Printf("Erro ao buscar aluno pelo ID %d: %v", alunoId, err)
-		return response.AlunoResponse{}
+		return data.AlunoResponse{}
 	}
-	alunoResponse := response.AlunoResponse{
+	alunoResponse := data.AlunoResponse{
 		Id:   alunoData.Id,
 		Nome: alunoData.Nome,
 	}
 	return alunoResponse
 }
 
-func (a *AlunoServiceImple) Update(aluno request.AtualizarAlunoRequest) {
+func (a *AlunoServiceImple) Update(aluno data.AtualizarAlunoRequest) {
 
 	if err := a.validate.Struct(aluno); err != nil {
 		log.Printf("Erro de validação: %v", err)

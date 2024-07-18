@@ -1,4 +1,4 @@
-package request
+package data
 
 type ProfessorRequest struct {
 	Nome  string `json:"nome" validate:"required"`

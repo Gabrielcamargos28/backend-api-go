@@ -2,7 +2,6 @@ package controller
 
 import (
 	"controle-notas/src/data"
-	"controle-notas/src/data/professor/request"
 	"controle-notas/src/service/professor"
 	"net/http"
 	"strconv"
@@ -21,7 +20,7 @@ func NewProfessorController(service professor.ProfessorService) *ProfessorContro
 }
 
 func (controller *ProfessorController) Create(ctx *gin.Context) {
-	var criarRequisicao request.ProfessorRequest
+	var criarRequisicao data.ProfessorRequest
 	if err := ctx.ShouldBindJSON(&criarRequisicao); err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
@@ -50,7 +49,7 @@ func (controller *ProfessorController) Update(ctx *gin.Context) {
 		return
 	}
 
-	var requisicaoAtualizar = request.AtualizarProfessorRequest{}
+	var requisicaoAtualizar = data.AtualizarProfessorRequest{}
 	if err := ctx.ShouldBindJSON(&requisicaoAtualizar); err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return

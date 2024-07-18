@@ -1,4 +1,4 @@
-package response
+package data
 
 type AlunoResponse struct {
 	Id        uint   `json:"id"`

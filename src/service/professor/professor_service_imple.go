@@ -2,8 +2,7 @@ package professor
 
 import (
 	"controle-notas/src/configuration/rest_err"
-	"controle-notas/src/data/professor/request"
-	"controle-notas/src/data/professor/response"
+	"controle-notas/src/data"
 	"controle-notas/src/models"
 	"controle-notas/src/repository"
 	"strings"
@@ -25,7 +24,7 @@ func NewProfessorServiceImple(professorRepository repository.ProfessorRepository
 	}
 }
 
-func (p *ProfessorServiceImple) Create(professor request.ProfessorRequest) *rest_err.RestErr {
+func (p *ProfessorServiceImple) Create(professor data.ProfessorRequest) *rest_err.RestErr {
 	professorModel := models.Professor{
 		Nome:  professor.Nome,
 		Email: professor.Email,
@@ -50,15 +49,15 @@ func (p *ProfessorServiceImple) Delete(professorId uint) *rest_err.RestErr {
 	return nil
 }
 
-func (p *ProfessorServiceImple) FindAll() ([]response.ProfessorResponse, *rest_err.RestErr) {
+func (p *ProfessorServiceImple) FindAll() ([]data.ProfessorResponse, *rest_err.RestErr) {
 	result, err := p.ProfessorRepository.FindAll()
 	if err != nil {
 		return nil, rest_err.NewInternalServerError("Erro ao buscar todos os professores")
 	}
 
-	var professors []response.ProfessorResponse
+	var professors []data.ProfessorResponse
 	for _, value := range result {
-		professor := response.ProfessorResponse{
+		professor := data.ProfessorResponse{
 			Id:   value.Id,
 			Nome: value.Nome,
 		}
@@ -67,20 +66,20 @@ func (p *ProfessorServiceImple) FindAll() ([]response.ProfessorResponse, *rest_e
 	return professors, nil
 }
 
-func (p *ProfessorServiceImple) FindById(professorId uint) (response.ProfessorResponse, *rest_err.RestErr) {
+func (p *ProfessorServiceImple) FindById(professorId uint) (data.ProfessorResponse, *rest_err.RestErr) {
 	professorData, err := p.ProfessorRepository.FindById(professorId)
 	if err != nil {
 		log.Printf("Erro ao buscar professor por ID %d: %v", professorId, err)
-		return response.ProfessorResponse{}, rest_err.NewInternalServerError("Erro ao buscar professor por ID")
+		return data.ProfessorResponse{}, rest_err.NewInternalServerError("Erro ao buscar professor por ID")
 	}
 
-	professorResponse := response.ProfessorResponse{
+	professorResponse := data.ProfessorResponse{
 		Id:   professorData.Id,
 		Nome: professorData.Nome,
 	}
 	return professorResponse, nil
 }
-func (p *ProfessorServiceImple) Update(professor request.AtualizarProfessorRequest) *rest_err.RestErr {
+func (p *ProfessorServiceImple) Update(professor data.AtualizarProfessorRequest) *rest_err.RestErr {
 	professorData, err := p.ProfessorRepository.FindById(professor.Id)
 	if err != nil {
 		log.Printf("Erro ao atualizar professor com ID %d: %v", professor.Id, err)

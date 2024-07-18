@@ -1,4 +1,4 @@
-package request
+package data
 
 type AtualizarProfessorRequest struct {
 	Id    uint   `json:"id" validate:required`

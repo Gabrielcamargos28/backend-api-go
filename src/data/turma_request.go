@@ -1,7 +1,6 @@
-package request
+package data
 
-type AtualizaTurmaRequest struct {
-	Id          uint   `json:"id"`
+type TurmaRequest struct {
 	Nome        string `json:"nome"`
 	Semestre    string `json:"semestre"`
 	Ano         int    `json:"ano"`

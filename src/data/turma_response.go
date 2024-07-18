@@ -1,4 +1,4 @@
-package response
+package data
 
 type TurmaResponse struct {
 	Id        uint   `json:"id"`

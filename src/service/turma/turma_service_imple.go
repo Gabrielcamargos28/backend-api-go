@@ -2,8 +2,7 @@ package turma
 
 import (
 	"controle-notas/src/configuration/rest_err"
-	"controle-notas/src/data/turma/request"
-	"controle-notas/src/data/turma/response"
+	"controle-notas/src/data"
 	"controle-notas/src/models"
 	"controle-notas/src/repository"
 	"log"
@@ -25,7 +24,7 @@ func NewTurmaServiceImple(turmaRepository repository.TurmaRepository, alunoRepos
 	}
 }
 
-func (t *TurmaServiceImple) Create(turma request.TurmaRequest) *rest_err.RestErr {
+func (t *TurmaServiceImple) Create(turma data.TurmaRequest) *rest_err.RestErr {
 	turmaModel := models.Turma{
 		Nome:        turma.Nome,
 		Semestre:    turma.Semestre,
@@ -47,15 +46,15 @@ func (t *TurmaServiceImple) Delete(turmaId uint) *rest_err.RestErr {
 	return nil
 }
 
-func (t *TurmaServiceImple) FindAll() ([]response.TurmaResponse, *rest_err.RestErr) {
+func (t *TurmaServiceImple) FindAll() ([]data.TurmaResponse, *rest_err.RestErr) {
 	result, err := t.TurmaRepository.FindAll()
 	if err != nil {
 		return nil, rest_err.NewInternalServerError("Erro ao buscar turmas")
 	}
 
-	var turmas []response.TurmaResponse
+	var turmas []data.TurmaResponse
 	for _, value := range result {
-		turma := response.TurmaResponse{
+		turma := data.TurmaResponse{
 			Id:        value.Id,
 			Nome:      value.Nome,
 			Semestre:  value.Semestre,
@@ -67,14 +66,14 @@ func (t *TurmaServiceImple) FindAll() ([]response.TurmaResponse, *rest_err.RestE
 	return turmas, nil
 }
 
-func (t *TurmaServiceImple) FindById(turmaId uint) (response.TurmaResponse, *rest_err.RestErr) {
+func (t *TurmaServiceImple) FindById(turmaId uint) (data.TurmaResponse, *rest_err.RestErr) {
 	turmaData, err := t.TurmaRepository.FindById(turmaId)
 	if err != nil {
 		log.Printf("Erro ao buscar turma por ID %d: %v", turmaId, err)
-		return response.TurmaResponse{}, err
+		return data.TurmaResponse{}, err
 	}
 
-	turmaResponse := response.TurmaResponse{
+	turmaResponse := data.TurmaResponse{
 		Id:        turmaData.Id,
 		Nome:      turmaData.Nome,
 		Semestre:  turmaData.Semestre,
@@ -84,7 +83,7 @@ func (t *TurmaServiceImple) FindById(turmaId uint) (response.TurmaResponse, *res
 	return turmaResponse, nil
 }
 
-func (t *TurmaServiceImple) Update(turma request.AtualizaTurmaRequest) *rest_err.RestErr {
+func (t *TurmaServiceImple) Update(turma data.AtualizaTurmaRequest) *rest_err.RestErr {
 	turmaData, err := t.TurmaRepository.FindById(turma.Id)
 	if err != nil {
 		log.Printf("Erro ao atualizar: %v", err)
@@ -101,7 +100,7 @@ func (t *TurmaServiceImple) Update(turma request.AtualizaTurmaRequest) *rest_err
 	return nil
 }
 
-func (t *TurmaServiceImple) AdicionarAlunos(request request.AdicioanarAlunosTurma) *rest_err.RestErr {
+func (t *TurmaServiceImple) AdicionarAlunos(request data.AdicioanarAlunosTurma) *rest_err.RestErr {
 	err := t.validate.Struct(request)
 	if err != nil {
 		log.Printf("Erro ao validar requisição: %v", err)
