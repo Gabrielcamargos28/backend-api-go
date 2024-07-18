@@ -3,6 +3,7 @@ package repository
 
 import (
 	"controle-notas/src/configuration/rest_err"
+	"controle-notas/src/data"
 	"controle-notas/src/models"
 	"strings"
 
@@ -67,8 +68,14 @@ func (a *AtividadeRepositoryImple) Save(atividade models.Atividade) *rest_err.Re
 	return nil
 }
 
-func (a *AtividadeRepositoryImple) Update(atividade models.Atividade) *rest_err.RestErr {
-	if result := a.Db.Save(&atividade); result.Error != nil {
+func (a *AtividadeRepositoryImple) Update(request models.Atividade) *rest_err.RestErr {
+	var updateAtividade = data.AtualizarAtividadeRequest{
+		Id:    request.Id,
+		Nome:  request.Nome,
+		Valor: request.Valor,
+		Data:  request.Data,
+	}
+	if result := a.Db.Model(&request).Updates(updateAtividade); result.Error != nil {
 		return rest_err.NewInternalServerError("Erro ao atualizar atividade")
 	}
 	return nil

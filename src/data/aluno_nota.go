@@ -1,7 +1,11 @@
 package data
 
 type AlunoNota struct {
-	AlunoId   uint    `json:"aluno_id"`
-	AlunoNome string  `json:"aluno_nome"`
-	Nota      float64 `json:"nota"`
+	AlunoId       uint    `json:"alunoId"`
+	AlunoNome     string  `json:"alunoNome"`
+	Nota          float64 `json:"nota"`
+	TurmaId       uint    `json:"turmaId"`
+	TurmaNome     string  `json:"turmaNome"`
+	AtividadeId   uint    `json:"atividadeId"`
+	AtividadeNome string  `json:"atividadeNome"`
 }

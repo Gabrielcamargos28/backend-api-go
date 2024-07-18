@@ -8,6 +8,7 @@ import (
 	"controle-notas/src/router"
 	"controle-notas/src/service/aluno"
 	"controle-notas/src/service/atividade"
+	"controle-notas/src/service/nota"
 	"controle-notas/src/service/professor"
 	"controle-notas/src/service/turma"
 	"log"
@@ -26,7 +27,7 @@ func main() {
 
 	db := database.DatabaseConnection()
 
-	db.AutoMigrate(&models.Professor{}, &models.Turma{}, &models.Aluno{}, &models.Atividade{})
+	db.AutoMigrate(&models.Professor{}, &models.Turma{}, &models.Aluno{}, &models.Atividade{}, &models.Nota{}, &models.AlunoNota{})
 
 	validate := validator.New()
 
@@ -34,18 +35,21 @@ func main() {
 	turmaRepository := repository.NewTurmaRepositoryImple(db)
 	alunoRepository := repository.NewAlunoRepositoryImple(db)
 	atividadeRepository := repository.NewAtividadeRepositoryImple(db)
+	notaRepository := repository.NewNotaRepositoryImple(db)
 
 	professorService := professor.NewProfessorServiceImple(professorRepository, validate)
 	turmaService := turma.NewTurmaServiceImple(turmaRepository, alunoRepository, validate)
 	alunoService := aluno.NewAlunoServiceImple(alunoRepository, validate)
 	atividadeService := atividade.NewAtividadeServiceImple(atividadeRepository, turmaRepository, validate)
+	notaService := nota.NewNotaServiceImple(notaRepository, validate)
 
 	professorController := controller.NewProfessorController(professorService)
 	turmaController := controller.NewTurmaController(turmaService)
 	alunoController := controller.NewAlunoController(alunoService)
 	atividadeController := controller.NewAtividadeController(atividadeService)
+	notaController := controller.NewNotaController(notaService)
 
-	routes := router.NewRouter(professorController, turmaController, alunoController, atividadeController)
+	routes := router.NewRouter(professorController, turmaController, alunoController, atividadeController, notaController)
 
 	server := &http.Server{
 		Addr:    ":3000",

@@ -50,7 +50,6 @@ func (a *AtividadeServiceImple) Update(atividade data.AtualizarAtividadeRequest)
 	atividadeModel.Nome = atividade.Nome
 	atividadeModel.Valor = atividade.Valor
 	atividadeModel.Data = atividade.Data
-	atividadeModel.TurmaId = atividade.TurmaId
 
 	if err := a.AtividadeRepository.Update(atividadeModel); err != nil {
 		return rest_err.NewInternalServerError("Erro ao atualizar a atividade")

@@ -7,7 +7,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func NewRouter(professorController *controller.ProfessorController, turmaController *controller.TurmaController, alunoController *controller.AlunoController, atividadeController *controller.AtividadeController) *gin.Engine {
+func NewRouter(professorController *controller.ProfessorController, turmaController *controller.TurmaController, alunoController *controller.AlunoController, atividadeController *controller.AtividadeController, notaController *controller.NotaController) *gin.Engine {
 
 	router := gin.Default()
 
@@ -45,6 +45,13 @@ func NewRouter(professorController *controller.ProfessorController, turmaControl
 	atividadeRouter.POST("/criarAtividade", atividadeController.Create)
 	atividadeRouter.PUT("/atualizar/:atividadeId", atividadeController.Update)
 	atividadeRouter.DELETE("/deletar/:atividadeId", atividadeController.Delete)
+
+	notaRouter := baseRouter.Group("/nota")
+	notaRouter.GET("/listarTodos", notaController.FindAll)
+	notaRouter.GET("/listar/:notaId", notaController.FindById)
+	notaRouter.POST("/criarNota", notaController.Create)
+	notaRouter.PUT("/atualizar/:notaId", notaController.Update)
+	notaRouter.DELETE("/deletar/:notaId", notaController.Delete)
 
 	return router
 }
