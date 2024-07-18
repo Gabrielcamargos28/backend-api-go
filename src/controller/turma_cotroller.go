@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"controle-notas/src/configuration/rest_err"
 	"controle-notas/src/data"
 	"controle-notas/src/service/turma"
 	"net/http"
@@ -28,7 +29,7 @@ func (controller *TurmaController) Create(ctx *gin.Context) {
 
 	err := controller.TurmaService.Create(criarRequisicao)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		controller.handleRestErr(ctx, err)
 		return
 	}
 
@@ -57,7 +58,7 @@ func (controller *TurmaController) Update(ctx *gin.Context) {
 
 	err = controller.TurmaService.Update(requisicaoAtualizar)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		controller.handleRestErr(ctx, err)
 		return
 	}
 
@@ -79,7 +80,7 @@ func (controller *TurmaController) Delete(ctx *gin.Context) {
 
 	err = controller.TurmaService.Delete(uint(id))
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		controller.handleRestErr(ctx, err)
 		return
 	}
 
@@ -101,7 +102,7 @@ func (controller *TurmaController) FindById(ctx *gin.Context) {
 
 	turmaResponse, err := controller.TurmaService.FindById(uint(id))
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		controller.handleRestErr(ctx, err)
 		return
 	}
 
@@ -116,7 +117,7 @@ func (controller *TurmaController) FindById(ctx *gin.Context) {
 func (controller *TurmaController) FindAll(ctx *gin.Context) {
 	turmaResponse, err := controller.TurmaService.FindAll()
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		controller.handleRestErr(ctx, err)
 		return
 	}
 
@@ -137,7 +138,7 @@ func (controller *TurmaController) AdicionarAlunos(ctx *gin.Context) {
 
 	err := controller.TurmaService.AdicionarAlunos(requisicao)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Mensagem})
+		controller.handleRestErr(ctx, err)
 		return
 	}
 
@@ -156,10 +157,10 @@ func (controller *TurmaController) RemoverAlunoTurma(ctx *gin.Context) {
 		return
 	}
 
-	for _, alunoId := range requisicao.AlunosId {
-		err := controller.TurmaService.RemoveAlunoTurma(alunoId, requisicao.TurmaId)
+	for _, alunoID := range requisicao.AlunosId {
+		err := controller.TurmaService.RemoveAlunoTurma(alunoID, requisicao.TurmaId)
 		if err != nil {
-			ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Erro ao remover aluno da turma"})
+			controller.handleRestErr(ctx, err)
 			return
 		}
 	}
@@ -170,4 +171,12 @@ func (controller *TurmaController) RemoverAlunoTurma(ctx *gin.Context) {
 		Data:   requisicao,
 	}
 	ctx.JSON(http.StatusOK, webResponse)
+}
+
+func (controller *TurmaController) handleRestErr(ctx *gin.Context, err error) {
+	statusCode := http.StatusInternalServerError
+	if restErr, ok := err.(*rest_err.RestErr); ok {
+		statusCode = restErr.Campo
+	}
+	ctx.JSON(statusCode, gin.H{"error": err.Error()})
 }

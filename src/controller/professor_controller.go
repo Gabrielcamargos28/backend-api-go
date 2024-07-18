@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"controle-notas/src/configuration/rest_err"
 	"controle-notas/src/data"
 	"controle-notas/src/service/professor"
 	"net/http"
@@ -28,7 +29,7 @@ func (controller *ProfessorController) Create(ctx *gin.Context) {
 
 	err := controller.ProfessorService.Create(criarRequisicao)
 	if err != nil {
-		ctx.JSON(err.Campo, gin.H{"error": err.Mensagem})
+		controller.handleRestErr(ctx, err)
 		return
 	}
 
@@ -37,7 +38,6 @@ func (controller *ProfessorController) Create(ctx *gin.Context) {
 		Status: "Ok",
 		Data:   criarRequisicao,
 	}
-	ctx.Header("Content-Type", "application/json")
 	ctx.JSON(http.StatusOK, webResponse)
 }
 
@@ -49,7 +49,7 @@ func (controller *ProfessorController) Update(ctx *gin.Context) {
 		return
 	}
 
-	var requisicaoAtualizar = data.AtualizarProfessorRequest{}
+	var requisicaoAtualizar data.AtualizarProfessorRequest
 	if err := ctx.ShouldBindJSON(&requisicaoAtualizar); err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
@@ -57,8 +57,8 @@ func (controller *ProfessorController) Update(ctx *gin.Context) {
 	requisicaoAtualizar.Id = uint(id)
 
 	err = controller.ProfessorService.Update(requisicaoAtualizar)
-	if err == nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": "erro"})
+	if err != nil {
+		controller.handleRestErr(ctx, err)
 		return
 	}
 
@@ -67,7 +67,6 @@ func (controller *ProfessorController) Update(ctx *gin.Context) {
 		Status: "Ok",
 		Data:   requisicaoAtualizar,
 	}
-	ctx.Header("Content-Type", "application/json")
 	ctx.JSON(http.StatusOK, webResponse)
 }
 
@@ -81,7 +80,7 @@ func (controller *ProfessorController) Delete(ctx *gin.Context) {
 
 	err = controller.ProfessorService.Delete(uint(id))
 	if err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		controller.handleRestErr(ctx, err)
 		return
 	}
 
@@ -90,7 +89,6 @@ func (controller *ProfessorController) Delete(ctx *gin.Context) {
 		Status: "Ok",
 		Data:   nil,
 	}
-	ctx.Header("Content-Type", "application/json")
 	ctx.JSON(http.StatusOK, webResponse)
 }
 
@@ -103,8 +101,8 @@ func (controller *ProfessorController) FindById(ctx *gin.Context) {
 	}
 
 	professorResponse, err := controller.ProfessorService.FindById(uint(id))
-	if err == nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Erro"})
+	if err != nil {
+		controller.handleRestErr(ctx, err)
 		return
 	}
 
@@ -113,14 +111,13 @@ func (controller *ProfessorController) FindById(ctx *gin.Context) {
 		Status: "Ok",
 		Data:   professorResponse,
 	}
-	ctx.Header("Content-Type", "application/json")
 	ctx.JSON(http.StatusOK, webResponse)
 }
 
 func (controller *ProfessorController) FindAll(ctx *gin.Context) {
 	professorResponse, err := controller.ProfessorService.FindAll()
 	if err != nil {
-		ctx.JSON(err.Campo, gin.H{"error": err.Mensagem})
+		controller.handleRestErr(ctx, err)
 		return
 	}
 
@@ -129,6 +126,13 @@ func (controller *ProfessorController) FindAll(ctx *gin.Context) {
 		Status: "Ok",
 		Data:   professorResponse,
 	}
-	ctx.Header("Content-Type", "application/json")
 	ctx.JSON(http.StatusOK, webResponse)
+}
+
+func (controller *ProfessorController) handleRestErr(ctx *gin.Context, err error) {
+	statusCode := http.StatusInternalServerError
+	if restErr, ok := err.(*rest_err.RestErr); ok {
+		statusCode = restErr.Campo
+	}
+	ctx.JSON(statusCode, gin.H{"error": err.Error()})
 }

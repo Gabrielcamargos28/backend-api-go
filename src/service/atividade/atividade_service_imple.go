@@ -5,19 +5,28 @@ import (
 	"controle-notas/src/data"
 	"controle-notas/src/models"
 	"controle-notas/src/repository"
+	"errors"
 	"log"
+
+	"github.com/go-playground/validator/v10"
+	"gorm.io/gorm"
 )
 
 type AtividadeServiceImple struct {
 	AtividadeRepository repository.AtividadeRepository
+	TurmaRepository     repository.TurmaRepository
+	validate            *validator.Validate
 }
 
-func NewAtividadeServiceImple(repo repository.AtividadeRepository) AtividadeService {
-	return &AtividadeServiceImple{AtividadeRepository: repo}
+func NewAtividadeServiceImple(atividadeRepository repository.AtividadeRepository, turmaRepository repository.TurmaRepository, validate *validator.Validate) AtividadeService {
+	return &AtividadeServiceImple{
+		AtividadeRepository: atividadeRepository,
+		TurmaRepository:     turmaRepository,
+		validate:            validate,
+	}
 }
 
 func (a *AtividadeServiceImple) Create(atividade data.AtividadeRequest) *rest_err.RestErr {
-
 	atividadeModel := models.Atividade{
 		Nome:    atividade.Nome,
 		Valor:   atividade.Valor,
@@ -32,7 +41,6 @@ func (a *AtividadeServiceImple) Create(atividade data.AtividadeRequest) *rest_er
 }
 
 func (a *AtividadeServiceImple) Update(atividade data.AtualizarAtividadeRequest) *rest_err.RestErr {
-
 	atividadeModel, err := a.AtividadeRepository.FindById(atividade.Id)
 	if err != nil {
 		log.Printf("Erro ao buscar atividade por ID %d: %v", atividade.Id, err)
@@ -61,7 +69,16 @@ func (a *AtividadeServiceImple) FindById(atividadeId uint) (data.AtividadeRespon
 	atividadeModel, err := a.AtividadeRepository.FindById(atividadeId)
 	if err != nil {
 		log.Printf("Erro ao buscar atividade por ID %d: %v", atividadeId, err)
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return data.AtividadeResponse{}, rest_err.NewNotFoundError("Atividade não encontrada")
+		}
 		return data.AtividadeResponse{}, rest_err.NewInternalServerError("Erro ao buscar atividade por ID")
+	}
+
+	turmaModel, err := a.TurmaRepository.FindById(atividadeModel.TurmaId)
+	if err != nil {
+		log.Printf("Erro ao buscar turma por ID %d: %v", atividadeModel.TurmaId, err)
+		return data.AtividadeResponse{}, rest_err.NewInternalServerError("Erro ao buscar turma associada à atividade")
 	}
 
 	atividadeResponse := data.AtividadeResponse{
@@ -70,10 +87,25 @@ func (a *AtividadeServiceImple) FindById(atividadeId uint) (data.AtividadeRespon
 		Valor: atividadeModel.Valor,
 		Data:  atividadeModel.Data,
 		Turma: data.TurmaResponse{
-			Id:   atividadeModel.Turma.Id,
-			Nome: atividadeModel.Turma.Nome,
+			Id:        turmaModel.Id,
+			Nome:      turmaModel.Nome,
+			Semestre:  turmaModel.Semestre,
+			Ano:       turmaModel.Ano,
+			Professor: turmaModel.Professor.Nome,
 		},
-		AlunosNotas: []data.AlunoNota{},
+	}
+
+	alunosNotas, err := a.AtividadeRepository.FindAlunosNotas(atividadeId)
+	if err != nil {
+		log.Printf("Erro ao buscar alunos e notas para atividade ID %d: %v", atividadeId, err)
+		return data.AtividadeResponse{}, rest_err.NewInternalServerError("Erro ao buscar alunos e notas associados à atividade")
+	}
+
+	for _, alunoNota := range alunosNotas {
+		atividadeResponse.AlunosNotas = append(atividadeResponse.AlunosNotas, data.AlunoNota{
+			AlunoId: alunoNota.AlunoID,
+			Nota:    alunoNota.Nota,
+		})
 	}
 
 	return atividadeResponse, nil
@@ -87,17 +119,27 @@ func (a *AtividadeServiceImple) FindAll() ([]data.AtividadeResponse, *rest_err.R
 
 	var atividadesResponse []data.AtividadeResponse
 	for _, atividade := range atividadesModel {
+
+		turmaModel, err := a.TurmaRepository.FindById(atividade.TurmaId)
+		if err != nil {
+			log.Printf("Erro ao buscar turma por ID %d: %v", atividade.TurmaId, err)
+			return nil, rest_err.NewInternalServerError("Erro ao buscar turma associada à atividade")
+		}
+
 		atividadeResponse := data.AtividadeResponse{
 			Id:    atividade.Id,
 			Nome:  atividade.Nome,
 			Valor: atividade.Valor,
 			Data:  atividade.Data,
 			Turma: data.TurmaResponse{
-				Id:   atividade.Turma.Id,
-				Nome: atividade.Turma.Nome,
+				Id:        turmaModel.Id,
+				Nome:      turmaModel.Nome,
+				Semestre:  turmaModel.Semestre,
+				Ano:       turmaModel.Ano,
+				Professor: turmaModel.Professor.Nome,
 			},
-			AlunosNotas: []data.AlunoNota{},
 		}
+
 		atividadesResponse = append(atividadesResponse, atividadeResponse)
 	}
 

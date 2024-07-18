@@ -53,7 +53,7 @@ func (a *AtividadeRepositoryImple) FindById(atividadeId uint) (models.Atividade,
 	resultado := a.Db.First(&atividade, atividadeId)
 	if resultado.Error != nil {
 		if resultado.Error == gorm.ErrRecordNotFound {
-			return atividade, rest_err.NewNotFoundError("Atividade não encontrada")
+			return atividade, rest_err.NewInternalServerError("Erro ao encontrar atividade")
 		}
 		return atividade, rest_err.NewInternalServerError("Erro ao buscar atividade")
 	}
@@ -72,4 +72,13 @@ func (a *AtividadeRepositoryImple) Update(atividade models.Atividade) *rest_err.
 		return rest_err.NewInternalServerError("Erro ao atualizar atividade")
 	}
 	return nil
+}
+
+func (a *AtividadeRepositoryImple) FindAlunosNotas(atividadeId uint) ([]models.AlunoNota, *rest_err.RestErr) {
+	var alunosNotas []models.AlunoNota
+	result := a.Db.Where("atividade_id = ?", atividadeId).Find(&alunosNotas)
+	if result.Error != nil {
+		return nil, rest_err.NewInternalServerError("Erro ao buscar alunos e notas")
+	}
+	return alunosNotas, nil
 }
