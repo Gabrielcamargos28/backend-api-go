@@ -41,7 +41,7 @@ func main() {
 	turmaService := turma.NewTurmaServiceImple(turmaRepository, alunoRepository, validate)
 	alunoService := aluno.NewAlunoServiceImple(alunoRepository, validate)
 	atividadeService := atividade.NewAtividadeServiceImple(atividadeRepository, turmaRepository, validate)
-	notaService := nota.NewNotaServiceImple(notaRepository, validate)
+	notaService := nota.NewNotaServiceImple(notaRepository, atividadeRepository, validate)
 
 	professorController := controller.NewProfessorController(professorService)
 	turmaController := controller.NewTurmaController(turmaService)

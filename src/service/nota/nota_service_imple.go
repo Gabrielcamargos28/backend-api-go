@@ -38,8 +38,8 @@ func (n *NotaServiceImple) Create(nota data.NotaRequest) *rest_err.RestErr {
 		return rest_err.NewInternalServerError("Erro ao carregar atividade para busca de nota")
 	}
 
-	if models.Nota.Valor > modelAtividade.Valor {
-		return rest_err.NewBadRequestError()
+	if notaModel.Valor > modelAtividade.Valor {
+		return rest_err.NewBadRequestError("Nota atribuida maior que a nota da atividade")
 	}
 	err := n.NotaRepository.Save(notaModel)
 	if err != nil {
