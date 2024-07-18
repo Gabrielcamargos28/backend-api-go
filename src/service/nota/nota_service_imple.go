@@ -12,14 +12,16 @@ import (
 )
 
 type NotaServiceImple struct {
-	NotaRepository repository.NotaRepository
-	validate       *validator.Validate
+	NotaRepository      repository.NotaRepository
+	AtividadeRepository repository.AtividadeRepository
+	validate            *validator.Validate
 }
 
-func NewNotaServiceImple(notaRepository repository.NotaRepository, validate *validator.Validate) NotaService {
+func NewNotaServiceImple(notaRepository repository.NotaRepository, atividadeRepository repository.AtividadeRepository, validate *validator.Validate) NotaService {
 	return &NotaServiceImple{
-		NotaRepository: notaRepository,
-		validate:       validate,
+		NotaRepository:      notaRepository,
+		AtividadeRepository: atividadeRepository,
+		validate:            validate,
 	}
 }
 
@@ -28,6 +30,16 @@ func (n *NotaServiceImple) Create(nota data.NotaRequest) *rest_err.RestErr {
 		AlunoId:     nota.AlunoId,
 		AtividadeId: nota.AtividadeId,
 		Valor:       nota.Valor,
+	}
+
+	modelAtividade, errAt := n.AtividadeRepository.FindById(notaModel.AtividadeId)
+
+	if errAt != nil {
+		return rest_err.NewInternalServerError("Erro ao carregar atividade para busca de nota")
+	}
+
+	if models.Nota.Valor > modelAtividade.Valor {
+		return rest_err.NewBadRequestError()
 	}
 	err := n.NotaRepository.Save(notaModel)
 	if err != nil {
