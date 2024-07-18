@@ -27,6 +27,14 @@ func NewRestErr(mensagem string, err string, campo int, causas []Causas) *RestEr
 	}
 }
 
+func NewNotFoundError(mensagem string) *RestErr {
+	return &RestErr{
+		Mensagem: mensagem,
+		Err:      "Não encontrado",
+		Campo:    http.StatusNotFound,
+	}
+}
+
 func NewBadRequestError(mensagem string) *RestErr {
 	return &RestErr{
 		Mensagem: mensagem,
@@ -42,12 +50,11 @@ func NewBadValidationError(mensagem string, causas []Causas) *RestErr {
 		Causas:   causas,
 	}
 }
-func NewInternalServerError(mensagem string, causas []Causas) *RestErr {
+func NewInternalServerError(mensagem string) *RestErr {
 	return &RestErr{
 		Mensagem: mensagem,
 		Err:      "Erro interno",
 		Campo:    http.StatusInternalServerError,
-		Causas:   causas,
 	}
 }
 func NewUnauthorizedRequestError(mensagem string) *RestErr {
