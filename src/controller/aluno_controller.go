@@ -100,7 +100,7 @@ func (controller *AlunoController) FindById(ctx *gin.Context) {
 
 	alunoResponse, restErr := controller.AlunoService.FindById(uint(id))
 	if restErr != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": restErr.Mensagem})
+		ctx.JSON(http.StatusBadRequest, gin.H{"error: ": restErr.Mensagem})
 		return
 	}
 
@@ -127,4 +127,21 @@ func (controller *AlunoController) FindAll(ctx *gin.Context) {
 	}
 	ctx.Header("Content-Type", "application/json")
 	ctx.JSON(http.StatusOK, webResponse)
+}
+
+func (ctrl *AlunoController) FindNotasByAlunoId(ctx *gin.Context) {
+
+	alunoId, err := strconv.ParseUint(ctx.Param("alunoId"), 10, 32)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "ID inválido"})
+		return
+	}
+
+	notas, err := ctrl.AlunoService.FindNotasByAlunoId(uint(alunoId))
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, err)
+		return
+	}
+
+	ctx.JSON(http.StatusOK, notas)
 }

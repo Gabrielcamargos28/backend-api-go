@@ -10,5 +10,6 @@ type AlunoService interface {
 	Update(aluno data.AtualizarAlunoRequest) *rest_err.RestErr
 	Delete(alunoId uint) *rest_err.RestErr
 	FindById(alunoId uint) (data.AlunoResponse, *rest_err.RestErr)
-	FindAll() ([]data.AlunoResponse, *rest_err.RestErr)
+	FindAll() ([]data.AlunoResumido, *rest_err.RestErr)
+	FindNotasByAlunoId(alunoId uint) ([]data.NotaResponse, *rest_err.RestErr)
 }

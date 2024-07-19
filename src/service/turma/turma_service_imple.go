@@ -55,11 +55,12 @@ func (t *TurmaServiceImple) FindAll() ([]data.TurmaResponse, *rest_err.RestErr) 
 	var turmas []data.TurmaResponse
 	for _, value := range result {
 		turma := data.TurmaResponse{
-			Id:        value.Id,
-			Nome:      value.Nome,
-			Semestre:  value.Semestre,
-			Ano:       value.Ano,
-			Professor: value.Professor.Nome,
+			Id:          value.Id,
+			Nome:        value.Nome,
+			Semestre:    value.Semestre,
+			Ano:         value.Ano,
+			ProfessorId: value.Professor.Id,
+			Professor:   value.Professor.Nome,
 		}
 		turmas = append(turmas, turma)
 	}
@@ -73,22 +74,33 @@ func (t *TurmaServiceImple) FindById(turmaId uint) (data.TurmaAlunosResponse, *r
 		return data.TurmaAlunosResponse{}, rest_err.NewInternalServerError("Erro ao buscar turma por ID")
 	}
 
-	var alunosResponse []data.AlunoResponse
+	var alunosResponse []data.AlunoResumido
 	for _, aluno := range turmaData.Alunos {
-		alunosResponse = append(alunosResponse, data.AlunoResponse{
-			Id:        aluno.Id,
-			Nome:      aluno.Nome,
-			Matricula: aluno.Matricula,
+		alunosResponse = append(alunosResponse, data.AlunoResumido{
+			Id:   aluno.Id,
+			Nome: aluno.Nome,
+		})
+	}
+
+	var atividadeResponse []data.AtividadeTurmaResponse
+	for _, atividade := range turmaData.Atividades {
+		atividadeResponse = append(atividadeResponse, data.AtividadeTurmaResponse{
+			Id:    atividade.Id,
+			Nome:  atividade.Nome,
+			Valor: atividade.Valor,
+			Data:  atividade.Data,
 		})
 	}
 
 	turmaResponse := data.TurmaAlunosResponse{
-		Id:        turmaData.Id,
-		Nome:      turmaData.Nome,
-		Semestre:  turmaData.Semestre,
-		Ano:       turmaData.Ano,
-		Professor: turmaData.Professor.Nome,
-		Alunos:    alunosResponse,
+		Id:          turmaData.Id,
+		Nome:        turmaData.Nome,
+		Semestre:    turmaData.Semestre,
+		Ano:         turmaData.Ano,
+		ProfessorId: turmaData.Professor.Id,
+		Professor:   turmaData.Professor.Nome,
+		Alunos:      alunosResponse,
+		Atividades:  atividadeResponse,
 	}
 
 	return turmaResponse, nil

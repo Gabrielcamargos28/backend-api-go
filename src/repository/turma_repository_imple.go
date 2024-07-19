@@ -44,7 +44,7 @@ func (t *TurmaRepositoryImple) Delete(turmaId uint) *rest_err.RestErr {
 
 func (t *TurmaRepositoryImple) FindById(turmaId uint) (models.Turma, *rest_err.RestErr) {
 	var turma models.Turma
-	result := t.Db.Preload("Alunos").First(&turma, turmaId)
+	result := t.Db.Preload("Alunos").Preload("Professor").Preload("Atividades").First(&turma, turmaId)
 	if result.Error != nil {
 		if result.Error == gorm.ErrRecordNotFound {
 			return turma, rest_err.NewNotFoundError("Turma não encontrada")

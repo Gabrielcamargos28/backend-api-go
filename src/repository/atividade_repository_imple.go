@@ -62,9 +62,9 @@ func (a *AtividadeRepositoryImple) FindAll() ([]models.Atividade, *rest_err.Rest
 func (a *AtividadeRepositoryImple) FindById(atividadeId uint) (models.Atividade, *rest_err.RestErr) {
 	var atividade models.Atividade
 	if err := a.Db.Preload("Turma.Professor").Preload("Notas.Aluno").First(&atividade, atividadeId).Error; err != nil {
-		if err != nil {
+		/*if err != nil {
 			return atividade, rest_err.NewNotFoundError("Atividade não encontrada")
-		}
+		}*/
 		return atividade, rest_err.NewInternalServerError("Erro ao buscar atividade")
 	}
 	return atividade, nil
@@ -88,13 +88,4 @@ func (a *AtividadeRepositoryImple) Update(request models.Atividade) *rest_err.Re
 		return rest_err.NewInternalServerError("Erro ao atualizar atividade")
 	}
 	return nil
-}
-
-func (a *AtividadeRepositoryImple) FindAlunosNotas(atividadeId uint) ([]models.AlunoNota, *rest_err.RestErr) {
-	var alunosNotas []models.AlunoNota
-	result := a.Db.Where("atividade_id = ?", atividadeId).Find(&alunosNotas)
-	if result.Error != nil {
-		return nil, rest_err.NewInternalServerError("Erro ao buscar alunos e notas")
-	}
-	return alunosNotas, nil
 }

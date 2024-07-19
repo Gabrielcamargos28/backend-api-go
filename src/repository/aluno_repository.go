@@ -11,4 +11,5 @@ type AlunoRepository interface {
 	Delete(alunoId uint) *rest_err.RestErr
 	FindById(alunoId uint) (models.Aluno, *rest_err.RestErr)
 	FindAll() ([]models.Aluno, *rest_err.RestErr)
+	FindNotasByAlunoId(alunoId uint) ([]models.Nota, *rest_err.RestErr)
 }

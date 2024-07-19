@@ -55,32 +55,84 @@ func (a *AlunoServiceImple) Delete(alunoId uint) *rest_err.RestErr {
 	return a.AlunoRepository.Delete(alunoId)
 }
 
-func (a *AlunoServiceImple) FindAll() ([]data.AlunoResponse, *rest_err.RestErr) {
+func (a *AlunoServiceImple) FindAll() ([]data.AlunoResumido, *rest_err.RestErr) {
 	result, err := a.AlunoRepository.FindAll()
 	if err != nil {
 		return nil, err
 	}
 
-	var alunos []data.AlunoResponse
+	var alunos []data.AlunoResumido
 	for _, value := range result {
-		aluno := data.AlunoResponse{
+		aluno := data.AlunoResumido{
 			Id:   value.Id,
 			Nome: value.Nome,
 		}
+		/*for _, turma := range value.Turmas {
+			turmaResponse := data.TurmaResponse{
+				Id:          turma.Id,
+				Nome:        turma.Nome,
+				Semestre:    turma.Semestre,
+				Ano:         turma.Ano,
+				ProfessorId: turma.Professor.Id,
+				Professor:   turma.Professor.Nome,
+			}
+			aluno.Turmas = append(aluno.Turmas, turmaResponse)
+		}*/
+
 		alunos = append(alunos, aluno)
 	}
+
 	return alunos, nil
 }
 
 func (a *AlunoServiceImple) FindById(alunoId uint) (data.AlunoResponse, *rest_err.RestErr) {
+
 	alunoData, err := a.AlunoRepository.FindById(alunoId)
 	if err != nil {
 		log.Printf("Erro ao buscar aluno pelo ID %d: %v", alunoId, err)
 		return data.AlunoResponse{}, rest_err.NewInternalServerError("Erro")
 	}
+
 	alunoResponse := data.AlunoResponse{
-		Id:   alunoData.Id,
-		Nome: alunoData.Nome,
+		Id:        alunoData.Id,
+		Nome:      alunoData.Nome,
+		Matricula: alunoData.Matricula,
 	}
+
+	for _, turma := range alunoData.Turmas {
+		turmaResponse := data.TurmaResponse{
+			Id:          turma.Id,
+			Nome:        turma.Nome,
+			Semestre:    turma.Semestre,
+			Ano:         turma.Ano,
+			ProfessorId: turma.Professor.Id,
+			Professor:   turma.Professor.Nome,
+		}
+		alunoResponse.Turmas = append(alunoResponse.Turmas, turmaResponse)
+	}
+
 	return alunoResponse, nil
+}
+
+func (s *AlunoServiceImple) FindNotasByAlunoId(alunoId uint) ([]data.NotaResponse, *rest_err.RestErr) {
+	notasData, err := s.AlunoRepository.FindNotasByAlunoId(alunoId)
+
+	if err != nil {
+		log.Printf("Erro ao buscar notas do aluno pelo ID %d: %v", alunoId, err)
+		return nil, rest_err.NewInternalServerError("Erro ao buscar notas do aluno")
+	}
+
+	var notasResponse []data.NotaResponse
+	for _, nota := range notasData {
+		notaResponse := data.NotaResponse{
+			Id:          nota.Id,
+			Valor:       nota.Valor,
+			AtividadeId: nota.AtividadeId,
+			Atividade:   nota.Atividade.Nome,
+			Data:        nota.Atividade.Data,
+		}
+		notasResponse = append(notasResponse, notaResponse)
+	}
+
+	return notasResponse, nil
 }

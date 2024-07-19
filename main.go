@@ -27,7 +27,7 @@ func main() {
 
 	db := database.DatabaseConnection()
 
-	db.AutoMigrate(&models.Professor{}, &models.Turma{}, &models.Aluno{}, &models.Atividade{}, &models.Nota{}, &models.AlunoNota{})
+	db.AutoMigrate(&models.Professor{}, &models.Turma{}, &models.Aluno{}, &models.Atividade{}, &models.Nota{}) // &models.AlunoNota{}
 
 	validate := validator.New()
 

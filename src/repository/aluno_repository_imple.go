@@ -54,7 +54,7 @@ func (a *AlunoRepositoryImple) Delete(alunoId uint) *rest_err.RestErr {
 
 func (a *AlunoRepositoryImple) FindById(alunoId uint) (models.Aluno, *rest_err.RestErr) {
 	var aluno models.Aluno
-	if err := a.Db.Where("id = ?", alunoId).First(&aluno).Error; err != nil {
+	if err := a.Db.Preload("Turmas.Professor").Where("id = ?", alunoId).First(&aluno).Error; err != nil {
 		if err == gorm.ErrRecordNotFound {
 			return aluno, rest_err.NewNotFoundError("Aluno não encontrado")
 		}
@@ -65,8 +65,19 @@ func (a *AlunoRepositoryImple) FindById(alunoId uint) (models.Aluno, *rest_err.R
 
 func (a *AlunoRepositoryImple) FindAll() ([]models.Aluno, *rest_err.RestErr) {
 	var alunos []models.Aluno
-	if err := a.Db.Find(&alunos).Error; err != nil {
+	if err := a.Db.Preload("Turmas.Professor").Find(&alunos).Error; err != nil {
 		return nil, rest_err.NewInternalServerError("Erro ao buscar todos os alunos")
 	}
 	return alunos, nil
+}
+
+func (r *AlunoRepositoryImple) FindNotasByAlunoId(alunoId uint) ([]models.Nota, *rest_err.RestErr) {
+	var notas []models.Nota
+	if err := r.Db.Preload("Atividade").Where("aluno_id = ?", alunoId).Find(&notas).Error; err != nil {
+		if err == gorm.ErrRecordNotFound {
+			return nil, rest_err.NewNotFoundError("Notas não encontradas")
+		}
+		return nil, rest_err.NewInternalServerError("Erro ao buscar notas do aluno")
+	}
+	return notas, nil
 }

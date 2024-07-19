@@ -38,6 +38,7 @@ func NewRouter(professorController *controller.ProfessorController, turmaControl
 	alunoRouter.POST("/criarAluno", alunoController.Create)
 	alunoRouter.PUT("/atualizar/:alunoId", alunoController.Update)
 	alunoRouter.DELETE("/deletar/:alunoId", alunoController.Delete)
+	alunoRouter.GET("/listar-notas/:alunoId", alunoController.FindNotasByAlunoId)
 
 	atividadeRouter := baseRouter.Group("/atividade")
 	atividadeRouter.GET("/listarTodos", atividadeController.FindAll)
