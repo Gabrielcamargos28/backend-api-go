@@ -100,9 +100,9 @@ func (controller *TurmaController) FindById(ctx *gin.Context) {
 		return
 	}
 
-	turmaResponse, err := controller.TurmaService.FindById(uint(id))
-	if err != nil {
-		controller.handleRestErr(ctx, err)
+	turmaResponse, restErr := controller.TurmaService.FindById(uint(id))
+	if restErr != nil {
+		controller.handleRestErr(ctx, restErr)
 		return
 	}
 
@@ -113,7 +113,6 @@ func (controller *TurmaController) FindById(ctx *gin.Context) {
 	}
 	ctx.JSON(http.StatusOK, webResponse)
 }
-
 func (controller *TurmaController) FindAll(ctx *gin.Context) {
 	turmaResponse, err := controller.TurmaService.FindAll()
 	if err != nil {
