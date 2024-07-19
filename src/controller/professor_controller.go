@@ -57,10 +57,6 @@ func (controller *ProfessorController) Update(ctx *gin.Context) {
 	requisicaoAtualizar.Id = uint(id)
 
 	err = controller.ProfessorService.Update(requisicaoAtualizar)
-	if err != nil {
-		controller.handleRestErr(ctx, err)
-		return
-	}
 
 	webResponse := data.ResponseApi{
 		Code:   http.StatusOK,
@@ -80,7 +76,6 @@ func (controller *ProfessorController) Delete(ctx *gin.Context) {
 
 	err = controller.ProfessorService.Delete(uint(id))
 	if err != nil {
-		controller.handleRestErr(ctx, err)
 		return
 	}
 
@@ -95,14 +90,15 @@ func (controller *ProfessorController) Delete(ctx *gin.Context) {
 func (controller *ProfessorController) FindById(ctx *gin.Context) {
 	professorId := ctx.Param("professorId")
 	id, err := strconv.ParseUint(professorId, 10, 32)
+
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": "ID inválido"})
 		return
 	}
 
-	professorResponse, err := controller.ProfessorService.FindById(uint(id))
-	if err != nil {
-		controller.handleRestErr(ctx, err)
+	professorResponse, restErr := controller.ProfessorService.FindById(uint(id))
+	if restErr != nil {
+		controller.handleRestErr(ctx, restErr)
 		return
 	}
 
@@ -111,7 +107,16 @@ func (controller *ProfessorController) FindById(ctx *gin.Context) {
 		Status: "Ok",
 		Data:   professorResponse,
 	}
+	ctx.Header("Content-Type", "application/json")
 	ctx.JSON(http.StatusOK, webResponse)
+}
+
+func (controller *ProfessorController) handleRestErr(ctx *gin.Context, err *rest_err.RestErr) {
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Mensagem})
+	} else {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Erro interno do servidor"})
+	}
 }
 
 func (controller *ProfessorController) FindAll(ctx *gin.Context) {
@@ -127,12 +132,4 @@ func (controller *ProfessorController) FindAll(ctx *gin.Context) {
 		Data:   professorResponse,
 	}
 	ctx.JSON(http.StatusOK, webResponse)
-}
-
-func (controller *ProfessorController) handleRestErr(ctx *gin.Context, err error) {
-	statusCode := http.StatusInternalServerError
-	if restErr, ok := err.(*rest_err.RestErr); ok {
-		statusCode = restErr.Campo
-	}
-	ctx.JSON(statusCode, gin.H{"error": err.Error()})
 }

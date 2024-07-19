@@ -31,6 +31,7 @@ func NewRouter(professorController *controller.ProfessorController, turmaControl
 	turmaRouter.PUT("/adicionarAlunos", turmaController.AdicionarAlunos)
 	turmaRouter.PUT("/removerAluno", turmaController.RemoverAlunoTurma)
 	turmaRouter.DELETE("/deletar/:turmaId", turmaController.Delete)
+	turmaRouter.GET("/listar-atividades/:turmaId", turmaController.GetAtividadesByTurmaId)
 
 	alunoRouter := baseRouter.Group("/aluno")
 	alunoRouter.GET("/listarTodos", alunoController.FindAll)
@@ -52,6 +53,7 @@ func NewRouter(professorController *controller.ProfessorController, turmaControl
 	notaRouter.POST("/criarNota", notaController.Create)
 	notaRouter.PUT("/atualizar/:notaId", notaController.Update)
 	notaRouter.DELETE("/deletar/:notaId", notaController.Delete)
+	router.GET("/api/aluno/:alunoId/notas", notaController.FindNotasByAluno)
 
 	return router
 }

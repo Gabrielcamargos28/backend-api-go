@@ -48,12 +48,10 @@ func (n *NotaRepositoryImple) FindAll() ([]models.Nota, *rest_err.RestErr) {
 	fmt.Println(notas, resultado)
 	return notas, nil
 }
-
-func (n *NotaRepositoryImple) FindById(notaId uint) (models.Nota, *rest_err.RestErr) {
+func (r *NotaRepositoryImple) FindById(notaId uint) (models.Nota, *rest_err.RestErr) {
 	var nota models.Nota
-	resultado := n.Db.Preload("Aluno").Preload("Atividade.Turma").First(&nota, notaId)
-	if resultado.Error != nil {
-		if resultado.Error == gorm.ErrRecordNotFound {
+	if err := r.Db.Preload("Aluno").Preload("Atividade.Turma").First(&nota, notaId).Error; err != nil {
+		if err != nil {
 			return nota, rest_err.NewNotFoundError("Nota não encontrada")
 		}
 		return nota, rest_err.NewInternalServerError("Erro ao buscar nota")
@@ -77,4 +75,23 @@ func (n *NotaRepositoryImple) Update(nota models.Nota) *rest_err.RestErr {
 		return rest_err.NewInternalServerError("Erro ao atualizar nota")
 	}
 	return nil
+}
+func (r *NotaRepositoryImple) FindNotasByAlunoId(alunoId uint) ([]models.Nota, *rest_err.RestErr) {
+	var notas []models.Nota
+	result := r.Db.Preload("Atividade.Turma").Where("aluno_id = ?", alunoId).Find(&notas)
+	if result.Error != nil {
+		return nil, rest_err.NewInternalServerError("Erro ao buscar notas do aluno")
+	}
+	return notas, nil
+}
+func (r *NotaRepositoryImple) FindByAlunoAndAtividade(alunoId uint, atividadeId uint) (*models.Nota, *rest_err.RestErr) {
+	var nota models.Nota
+	result := r.Db.Where("aluno_id = ? AND atividade_id = ?", alunoId, atividadeId).First(&nota)
+	if result.Error != nil {
+		if result.Error == gorm.ErrRecordNotFound {
+			return nil, nil
+		}
+		return nil, rest_err.NewInternalServerError("Erro ao buscar a nota")
+	}
+	return &nota, nil
 }

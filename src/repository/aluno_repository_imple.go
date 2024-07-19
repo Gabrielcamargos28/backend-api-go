@@ -1,7 +1,7 @@
 package repository
 
 import (
-	"controle-notas/src/data"
+	"controle-notas/src/configuration/rest_err"
 	"controle-notas/src/models"
 
 	"gorm.io/gorm"
@@ -15,32 +15,69 @@ func NewAlunoRepositoryImple(Db *gorm.DB) AlunoRepository {
 	return &AlunoRepositoryImple{Db: Db}
 }
 
-func (a *AlunoRepositoryImple) Delete(alunoId uint) {
-	var aluno models.Professor
-	a.Db.Where("id = ?", alunoId).Delete(&aluno)
-}
-
-func (a *AlunoRepositoryImple) FindAll() []models.Aluno {
-	var alunos []models.Aluno
-	a.Db.Find(&alunos)
-	return alunos
-}
-
-func (a *AlunoRepositoryImple) FindById(alunoId uint) (models.Aluno, error) {
-	var aluno models.Aluno
-	err := a.Db.First(&aluno, alunoId).Error
-	return aluno, err
-}
-
-func (a *AlunoRepositoryImple) Save(aluno models.Aluno) {
-	a.Db.Create(&aluno)
-}
-
-func (a *AlunoRepositoryImple) Update(aluno models.Aluno) {
-	var updateAluno = data.AtualizarAlunoRequest{
-		Id:        aluno.Id,
-		Nome:      aluno.Nome,
-		Matricula: aluno.Matricula,
+func (a *AlunoRepositoryImple) Save(aluno models.Aluno) *rest_err.RestErr {
+	if err := a.Db.Create(&aluno).Error; err != nil {
+		return rest_err.NewInternalServerError("Erro ao salvar aluno")
 	}
-	a.Db.Model(&aluno).Updates(updateAluno)
+	return nil
+}
+
+func (a *AlunoRepositoryImple) Update(aluno models.Aluno) *rest_err.RestErr {
+	if err := a.Db.Model(&aluno).Updates(aluno).Error; err != nil {
+		return rest_err.NewInternalServerError("Erro ao atualizar aluno")
+	}
+	return nil
+}
+
+func (a *AlunoRepositoryImple) Delete(alunoId uint) *rest_err.RestErr {
+	var aluno models.Aluno
+	if err := a.Db.Preload("Turmas").Where("id = ?", alunoId).First(&aluno).Error; err != nil {
+		if err == gorm.ErrRecordNotFound {
+			return rest_err.NewNotFoundError("Aluno não encontrado")
+		}
+		return rest_err.NewInternalServerError("Erro ao buscar aluno")
+	}
+
+	if err := a.Db.Model(&aluno).Association("Turmas").Clear(); err != nil {
+		return rest_err.NewInternalServerError("Erro ao desvincular turmas")
+	}
+
+	if err := a.Db.Where("aluno_id = ?", alunoId).Delete(&models.Nota{}).Error; err != nil {
+		return rest_err.NewInternalServerError("Erro ao deletar notas do aluno")
+	}
+
+	if err := a.Db.Delete(&aluno).Error; err != nil {
+		return rest_err.NewInternalServerError("Erro ao deletar aluno")
+	}
+	return nil
+}
+
+func (a *AlunoRepositoryImple) FindById(alunoId uint) (models.Aluno, *rest_err.RestErr) {
+	var aluno models.Aluno
+	if err := a.Db.Preload("Turmas.Professor").Where("id = ?", alunoId).First(&aluno).Error; err != nil {
+		if err == gorm.ErrRecordNotFound {
+			return aluno, rest_err.NewNotFoundError("Aluno não encontrado")
+		}
+		return aluno, rest_err.NewInternalServerError("Erro ao buscar aluno")
+	}
+	return aluno, nil
+}
+
+func (a *AlunoRepositoryImple) FindAll() ([]models.Aluno, *rest_err.RestErr) {
+	var alunos []models.Aluno
+	if err := a.Db.Preload("Turmas.Professor").Find(&alunos).Error; err != nil {
+		return nil, rest_err.NewInternalServerError("Erro ao buscar todos os alunos")
+	}
+	return alunos, nil
+}
+
+func (r *AlunoRepositoryImple) FindNotasByAlunoId(alunoId uint) ([]models.Nota, *rest_err.RestErr) {
+	var notas []models.Nota
+	if err := r.Db.Preload("Atividade").Where("aluno_id = ?", alunoId).Find(&notas).Error; err != nil {
+		if err == gorm.ErrRecordNotFound {
+			return nil, rest_err.NewNotFoundError("Notas não encontradas")
+		}
+		return nil, rest_err.NewInternalServerError("Erro ao buscar notas do aluno")
+	}
+	return notas, nil
 }

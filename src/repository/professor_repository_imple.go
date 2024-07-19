@@ -51,10 +51,10 @@ func (p *ProfessorRepositoryImple) FindAll() ([]models.Professor, *rest_err.Rest
 
 func (p *ProfessorRepositoryImple) FindById(professorId uint) (models.Professor, *rest_err.RestErr) {
 	var professor models.Professor
-	resultado := p.Db.First(&professor, professorId)
-	if resultado.Error != nil {
-		if resultado.Error == gorm.ErrRecordNotFound {
-			return professor, rest_err.NewInternalServerError("Professor não encontrado")
+
+	if err := p.Db.Where("id = ?", professorId).First(&professor).Error; err != nil {
+		if err == gorm.ErrRecordNotFound {
+			return professor, rest_err.NewNotFoundError("Professor não encontrado")
 		}
 		return professor, rest_err.NewInternalServerError("Erro ao buscar professor")
 	}

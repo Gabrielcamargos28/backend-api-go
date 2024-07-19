@@ -11,5 +11,4 @@ type AtividadeRepository interface {
 	Delete(atividadeId uint) *rest_err.RestErr
 	FindById(atividadeId uint) (models.Atividade, *rest_err.RestErr)
 	FindAll() ([]models.Atividade, *rest_err.RestErr)
-	FindAlunosNotas(atividadeId uint) ([]models.AlunoNota, *rest_err.RestErr)
 }

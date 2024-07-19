@@ -12,4 +12,5 @@ type TurmaRepository interface {
 	FindById(turmaId uint) (models.Turma, *rest_err.RestErr)
 	FindAll() ([]models.Turma, *rest_err.RestErr)
 	RemoveAlunoTurma(turmaId uint, alunoId uint) *rest_err.RestErr
+	FindAtividadesByTurmaId(turmaId uint) ([]models.Atividade, *rest_err.RestErr)
 }

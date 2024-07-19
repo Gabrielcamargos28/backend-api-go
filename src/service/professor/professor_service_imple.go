@@ -72,13 +72,13 @@ func (p *ProfessorServiceImple) FindById(professorId uint) (data.ProfessorRespon
 		log.Printf("Erro ao buscar professor por ID %d: %v", professorId, err)
 		return data.ProfessorResponse{}, rest_err.NewInternalServerError("Erro ao buscar professor por ID")
 	}
-
 	professorResponse := data.ProfessorResponse{
 		Id:   professorData.Id,
 		Nome: professorData.Nome,
 	}
 	return professorResponse, nil
 }
+
 func (p *ProfessorServiceImple) Update(professor data.AtualizarProfessorRequest) *rest_err.RestErr {
 	professorData, err := p.ProfessorRepository.FindById(professor.Id)
 	if err != nil {

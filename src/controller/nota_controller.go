@@ -100,9 +100,9 @@ func (controller *NotaController) FindById(ctx *gin.Context) {
 		return
 	}
 
-	notaResponse, err := controller.NotaService.FindById(uint(id))
-	if err != nil {
-		controller.handleRestErr(ctx, err)
+	notaResponse, restErr := controller.NotaService.FindById(uint(id))
+	if restErr != nil {
+		controller.handleRestErr(ctx, restErr)
 		return
 	}
 
@@ -111,6 +111,7 @@ func (controller *NotaController) FindById(ctx *gin.Context) {
 		Status: "Ok",
 		Data:   notaResponse,
 	}
+	ctx.Header("Content-Type", "application/json")
 	ctx.JSON(http.StatusOK, webResponse)
 }
 
@@ -135,4 +136,25 @@ func (controller *NotaController) handleRestErr(ctx *gin.Context, err error) {
 		statusCode = restErr.Campo
 	}
 	ctx.JSON(statusCode, gin.H{"error": err.Error()})
+}
+func (controller *NotaController) FindNotasByAluno(ctx *gin.Context) {
+	alunoId := ctx.Param("alunoId")
+	id, err := strconv.ParseUint(alunoId, 10, 32)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "ID inválido"})
+		return
+	}
+
+	notasResponse, restErr := controller.NotaService.FindNotasByAlunoId(uint(id))
+	if restErr != nil {
+		controller.handleRestErr(ctx, restErr)
+		return
+	}
+
+	webResponse := data.ResponseApi{
+		Code:   http.StatusOK,
+		Status: "Ok",
+		Data:   notasResponse,
+	}
+	ctx.JSON(http.StatusOK, webResponse)
 }

@@ -11,4 +11,6 @@ type NotaRepository interface {
 	Delete(notaId uint) *rest_err.RestErr
 	FindById(notaId uint) (models.Nota, *rest_err.RestErr)
 	FindAll() ([]models.Nota, *rest_err.RestErr)
+	FindNotasByAlunoId(alunoId uint) ([]models.Nota, *rest_err.RestErr)
+	FindByAlunoAndAtividade(alunoId uint, atividadeId uint) (*models.Nota, *rest_err.RestErr)
 }
