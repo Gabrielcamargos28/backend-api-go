@@ -44,5 +44,5 @@ Este projeto foi desenvolvido como parte do curso de Análise e Desenvolvimento 
 
 1. Clone o repositório:
    ```sh
-   git clone https://github.com/Gabrielcamargos28/nome-do-repositorio.git
+   git clone https://github.com/Gabrielcamargos28/backend-api-go/.git
    cd nome-do-repositorio
