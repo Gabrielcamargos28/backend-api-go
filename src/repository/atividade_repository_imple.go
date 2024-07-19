@@ -61,10 +61,9 @@ func (a *AtividadeRepositoryImple) FindAll() ([]models.Atividade, *rest_err.Rest
 
 func (a *AtividadeRepositoryImple) FindById(atividadeId uint) (models.Atividade, *rest_err.RestErr) {
 	var atividade models.Atividade
-	resultado := a.Db.First(&atividade, atividadeId)
-	if resultado.Error != nil {
-		if resultado.Error == gorm.ErrRecordNotFound {
-			return atividade, rest_err.NewInternalServerError("Erro ao encontrar atividade")
+	if err := a.Db.Preload("Turma.Professor").Preload("Notas.Aluno").First(&atividade, atividadeId).Error; err != nil {
+		if err != nil {
+			return atividade, rest_err.NewNotFoundError("Atividade não encontrada")
 		}
 		return atividade, rest_err.NewInternalServerError("Erro ao buscar atividade")
 	}

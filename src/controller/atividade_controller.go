@@ -100,9 +100,9 @@ func (controller *AtividadeController) FindById(ctx *gin.Context) {
 		return
 	}
 
-	atividadeResponse, err := controller.AtividadeService.FindById(uint(id))
-	if err != nil {
-		controller.handleRestErr(ctx, err)
+	atividadeResponse, restErr := controller.AtividadeService.FindById(uint(id))
+	if restErr != nil {
+		controller.handleRestErr(ctx, restErr)
 		return
 	}
 
