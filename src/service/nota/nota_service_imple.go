@@ -81,6 +81,27 @@ func (n *NotaServiceImple) FindAll() ([]data.AlunoNota, *rest_err.RestErr) {
 	}
 	return notas, nil
 }
+
+/*func (n *NotaServiceImple) FindById(notaId uint) (data.AlunoNota, *rest_err.RestErr) {
+	notaData, err := n.NotaRepository.FindById(notaId)
+	if err != nil {
+		log.Printf("Erro ao buscar nota por ID %d: %v", notaId, err)
+		return data.AlunoNota{}, rest_err.NewInternalServerError("Erro ao buscar nota por ID")
+	}
+
+	notaResponse := data.AlunoNota{
+		AlunoId:       notaData.AlunoId,
+		AlunoNome:     notaData.Aluno.Nome,
+		Nota:          notaData.Valor,
+		TurmaId:       notaData.Atividade.Turma.Id,
+		TurmaNome:     notaData.Atividade.Turma.Nome,
+		AtividadeId:   notaData.AtividadeId,
+		AtividadeNome: notaData.Atividade.Nome,
+	}
+	fmt.Println(notaData)
+	return notaResponse, nil
+}*/
+
 func (n *NotaServiceImple) FindById(notaId uint) (data.AlunoNota, *rest_err.RestErr) {
 	notaData, err := n.NotaRepository.FindById(notaId)
 	if err != nil {
@@ -89,11 +110,13 @@ func (n *NotaServiceImple) FindById(notaId uint) (data.AlunoNota, *rest_err.Rest
 	}
 
 	notaResponse := data.AlunoNota{
-		AlunoId:   notaData.AlunoId,
-		AlunoNome: notaData.Aluno.Nome,
-		Nota:      notaData.Valor,
-		TurmaId:   notaData.Atividade.TurmaId,
-		TurmaNome: notaData.Atividade.Turma.Nome,
+		AlunoId:       notaData.AlunoId,
+		AlunoNome:     notaData.Aluno.Nome,
+		Nota:          notaData.Valor,
+		TurmaId:       notaData.Atividade.Turma.Id,
+		TurmaNome:     notaData.Atividade.Turma.Nome,
+		AtividadeId:   notaData.AtividadeId,
+		AtividadeNome: notaData.Atividade.Nome,
 	}
 	return notaResponse, nil
 }

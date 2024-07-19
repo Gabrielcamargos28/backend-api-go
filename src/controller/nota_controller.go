@@ -100,9 +100,9 @@ func (controller *NotaController) FindById(ctx *gin.Context) {
 		return
 	}
 
-	notaResponse, err := controller.NotaService.FindById(uint(id))
-	if err != nil {
-		controller.handleRestErr(ctx, err)
+	notaResponse, restErr := controller.NotaService.FindById(uint(id))
+	if restErr != nil {
+		controller.handleRestErr(ctx, restErr)
 		return
 	}
 
@@ -111,6 +111,7 @@ func (controller *NotaController) FindById(ctx *gin.Context) {
 		Status: "Ok",
 		Data:   notaResponse,
 	}
+	ctx.Header("Content-Type", "application/json")
 	ctx.JSON(http.StatusOK, webResponse)
 }
 

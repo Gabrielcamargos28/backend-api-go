@@ -48,12 +48,10 @@ func (n *NotaRepositoryImple) FindAll() ([]models.Nota, *rest_err.RestErr) {
 	fmt.Println(notas, resultado)
 	return notas, nil
 }
-
-func (n *NotaRepositoryImple) FindById(notaId uint) (models.Nota, *rest_err.RestErr) {
+func (r *NotaRepositoryImple) FindById(notaId uint) (models.Nota, *rest_err.RestErr) {
 	var nota models.Nota
-	resultado := n.Db.Preload("Aluno").Preload("Atividade.Turma").First(&nota, notaId)
-	if resultado.Error != nil {
-		if resultado.Error == gorm.ErrRecordNotFound {
+	if err := r.Db.Preload("Aluno").Preload("Atividade.Turma").First(&nota, notaId).Error; err != nil {
+		if err != nil {
 			return nota, rest_err.NewNotFoundError("Nota não encontrada")
 		}
 		return nota, rest_err.NewInternalServerError("Erro ao buscar nota")

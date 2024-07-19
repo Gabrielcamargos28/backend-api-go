@@ -13,20 +13,22 @@ type AlunoController struct {
 	AlunoService aluno.AlunoService
 }
 
-func NewAlunoController(sevice aluno.AlunoService) *AlunoController {
+func NewAlunoController(service aluno.AlunoService) *AlunoController {
 	return &AlunoController{
-		AlunoService: sevice,
+		AlunoService: service,
 	}
 }
 
 func (controller *AlunoController) Create(ctx *gin.Context) {
-
 	var criarRequisicao data.AlunoRequest
 	if err := ctx.ShouldBindJSON(&criarRequisicao); err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	controller.AlunoService.Create(criarRequisicao)
+	if err := controller.AlunoService.Create(criarRequisicao); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Mensagem})
+		return
+	}
 
 	webResponse := data.ResponseApi{
 		Code:   http.StatusOK,
@@ -38,23 +40,24 @@ func (controller *AlunoController) Create(ctx *gin.Context) {
 }
 
 func (controller *AlunoController) Update(ctx *gin.Context) {
-
 	alunoId := ctx.Param("alunoId")
 	id, err := strconv.ParseUint(alunoId, 10, 32)
-
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": "ID inválido"})
 		return
 	}
 
-	var requisicaoAtualizar = data.AtualizarAlunoRequest{}
+	var requisicaoAtualizar data.AtualizarAlunoRequest
 	if err := ctx.ShouldBindJSON(&requisicaoAtualizar); err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 	requisicaoAtualizar.Id = uint(id)
 
-	controller.AlunoService.Update(requisicaoAtualizar)
+	if err := controller.AlunoService.Update(requisicaoAtualizar); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Mensagem})
+		return
+	}
 
 	webResponse := data.ResponseApi{
 		Code:   http.StatusOK,
@@ -66,15 +69,17 @@ func (controller *AlunoController) Update(ctx *gin.Context) {
 }
 
 func (controller *AlunoController) Delete(ctx *gin.Context) {
-
 	alunoId := ctx.Param("alunoId")
-
 	id, err := strconv.ParseUint(alunoId, 10, 32)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": "ID inválido"})
 		return
 	}
-	controller.AlunoService.Delete(uint(id))
+
+	if err := controller.AlunoService.Delete(uint(id)); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Mensagem})
+		return
+	}
 
 	webResponse := data.ResponseApi{
 		Code:   http.StatusOK,
@@ -86,33 +91,39 @@ func (controller *AlunoController) Delete(ctx *gin.Context) {
 }
 
 func (controller *AlunoController) FindById(ctx *gin.Context) {
-
 	alunoId := ctx.Param("alunoId")
 	id, err := strconv.ParseUint(alunoId, 10, 32)
-
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": "ID inválido"})
 		return
 	}
 
-	professorResponse := controller.AlunoService.FindById(uint(id))
+	alunoResponse, restErr := controller.AlunoService.FindById(uint(id))
+	if restErr != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": restErr.Mensagem})
+		return
+	}
 
 	webResponse := data.ResponseApi{
 		Code:   http.StatusOK,
 		Status: "Ok",
-		Data:   professorResponse,
+		Data:   alunoResponse,
 	}
 	ctx.Header("Content-Type", "application/json")
 	ctx.JSON(http.StatusOK, webResponse)
 }
 
 func (controller *AlunoController) FindAll(ctx *gin.Context) {
+	alunoResponse, restErr := controller.AlunoService.FindAll()
+	if restErr != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": restErr.Mensagem})
+		return
+	}
 
-	professorResponse := controller.AlunoService.FindAll()
 	webResponse := data.ResponseApi{
 		Code:   http.StatusOK,
 		Status: "Ok",
-		Data:   professorResponse,
+		Data:   alunoResponse,
 	}
 	ctx.Header("Content-Type", "application/json")
 	ctx.JSON(http.StatusOK, webResponse)

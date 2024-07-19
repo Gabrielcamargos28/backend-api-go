@@ -101,7 +101,7 @@ func (a *AtividadeServiceImple) FindById(atividadeId uint) (data.AtividadeRespon
 	}
 
 	for _, alunoNota := range alunosNotas {
-		atividadeResponse.AlunosNotas = append(atividadeResponse.AlunosNotas, data.AlunoNota{
+		atividadeResponse.Notas = append(atividadeResponse.Notas, data.AlunoNota{
 			AlunoId: alunoNota.AlunoID,
 			Nota:    alunoNota.Nota,
 		})

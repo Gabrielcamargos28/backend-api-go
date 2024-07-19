@@ -70,9 +70,8 @@ func (t *TurmaServiceImple) FindById(turmaId uint) (data.TurmaResponse, *rest_er
 	turmaData, err := t.TurmaRepository.FindById(turmaId)
 	if err != nil {
 		log.Printf("Erro ao buscar turma por ID %d: %v", turmaId, err)
-		return data.TurmaResponse{}, err
+		return data.TurmaResponse{}, rest_err.NewInternalServerError("Erro ao buscar turma por ID")
 	}
-
 	turmaResponse := data.TurmaResponse{
 		Id:        turmaData.Id,
 		Nome:      turmaData.Nome,
