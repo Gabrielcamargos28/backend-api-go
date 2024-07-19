@@ -76,3 +76,22 @@ func (n *NotaRepositoryImple) Update(nota models.Nota) *rest_err.RestErr {
 	}
 	return nil
 }
+func (r *NotaRepositoryImple) FindNotasByAlunoId(alunoId uint) ([]models.Nota, *rest_err.RestErr) {
+	var notas []models.Nota
+	result := r.Db.Preload("Atividade.Turma").Where("aluno_id = ?", alunoId).Find(&notas)
+	if result.Error != nil {
+		return nil, rest_err.NewInternalServerError("Erro ao buscar notas do aluno")
+	}
+	return notas, nil
+}
+func (r *NotaRepositoryImple) FindByAlunoAndAtividade(alunoId uint, atividadeId uint) (*models.Nota, *rest_err.RestErr) {
+	var nota models.Nota
+	result := r.Db.Where("aluno_id = ? AND atividade_id = ?", alunoId, atividadeId).First(&nota)
+	if result.Error != nil {
+		if result.Error == gorm.ErrRecordNotFound {
+			return nil, nil
+		}
+		return nil, rest_err.NewInternalServerError("Erro ao buscar a nota")
+	}
+	return &nota, nil
+}

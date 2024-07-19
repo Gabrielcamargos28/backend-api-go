@@ -13,4 +13,5 @@ type TurmaService interface {
 	FindAll() ([]data.TurmaResponse, *rest_err.RestErr)
 	AdicionarAlunos(turma data.AdicioanarAlunosTurma) *rest_err.RestErr
 	RemoveAlunoTurma(alunoId uint, turmaId uint) *rest_err.RestErr
+	FindAtividadesByTurmaId(turmaId uint) ([]data.AtividadeTurmaResponse, *rest_err.RestErr)
 }

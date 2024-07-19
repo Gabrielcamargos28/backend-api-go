@@ -82,6 +82,15 @@ func (t *TurmaServiceImple) FindById(turmaId uint) (data.TurmaAlunosResponse, *r
 		})
 	}
 
+	var somaValores float64
+	atividadesTurma, errR := t.TurmaRepository.FindAtividadesByTurmaId(turmaData.Id)
+	if errR != nil {
+		return data.TurmaAlunosResponse{}, rest_err.NewInternalServerError("Erro ao buscar turma por ID")
+	}
+	for _, atividade := range atividadesTurma {
+		somaValores += atividade.Valor
+	}
+
 	var atividadeResponse []data.AtividadeTurmaResponse
 	for _, atividade := range turmaData.Atividades {
 		atividadeResponse = append(atividadeResponse, data.AtividadeTurmaResponse{
@@ -93,14 +102,15 @@ func (t *TurmaServiceImple) FindById(turmaId uint) (data.TurmaAlunosResponse, *r
 	}
 
 	turmaResponse := data.TurmaAlunosResponse{
-		Id:          turmaData.Id,
-		Nome:        turmaData.Nome,
-		Semestre:    turmaData.Semestre,
-		Ano:         turmaData.Ano,
-		ProfessorId: turmaData.Professor.Id,
-		Professor:   turmaData.Professor.Nome,
-		Alunos:      alunosResponse,
-		Atividades:  atividadeResponse,
+		Id:             turmaData.Id,
+		Nome:           turmaData.Nome,
+		Semestre:       turmaData.Semestre,
+		Ano:            turmaData.Ano,
+		ProfessorId:    turmaData.Professor.Id,
+		Professor:      turmaData.Professor.Nome,
+		Alunos:         alunosResponse,
+		Atividades:     atividadeResponse,
+		SomaAtividades: somaValores,
 	}
 
 	return turmaResponse, nil
@@ -152,4 +162,31 @@ func (t *TurmaServiceImple) RemoveAlunoTurma(alunoId uint, turmaId uint) *rest_e
 	}
 
 	return nil
+}
+func (t *TurmaServiceImple) FindAtividadesByTurmaId(turmaId uint) ([]data.AtividadeTurmaResponse, *rest_err.RestErr) {
+
+	turma, err := t.TurmaRepository.FindById(turmaId)
+	if err != nil {
+		return nil, err
+	}
+	var somaValores float64
+	atividadesTurma, errR := t.TurmaRepository.FindAtividadesByTurmaId(turma.Id)
+	if errR != nil {
+		return nil, rest_err.NewInternalServerError("Erro ao buscar turma por ID")
+	}
+	for _, atividade := range atividadesTurma {
+		somaValores += atividade.Valor
+	}
+
+	var atividadesResponse []data.AtividadeTurmaResponse
+	for _, atividade := range turma.Atividades {
+		atividadesResponse = append(atividadesResponse, data.AtividadeTurmaResponse{
+			Id:    atividade.Id,
+			Nome:  atividade.Nome,
+			Valor: atividade.Valor,
+			Data:  atividade.Data,
+		})
+	}
+
+	return atividadesResponse, nil
 }

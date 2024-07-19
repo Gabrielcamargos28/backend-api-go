@@ -32,6 +32,21 @@ func (a *AtividadeServiceImple) Create(atividade data.AtividadeRequest) *rest_er
 		TurmaId: atividade.TurmaId,
 	}
 
+	atividadesTurma, err := a.TurmaRepository.FindAtividadesByTurmaId(atividadeModel.TurmaId)
+	if err != nil {
+		return rest_err.NewInternalServerError("Erro ao carregar Turma")
+	}
+
+	var somaValores float64
+	for _, atividade := range atividadesTurma {
+		somaValores += atividade.Valor
+	}
+
+	somaValores += atividadeModel.Valor
+
+	if somaValores > 100 {
+		return rest_err.NewBadRequestError("A soma dos valores das atividades da turma excede 100")
+	}
 	if err := a.AtividadeRepository.Save(atividadeModel); err != nil {
 		return rest_err.NewInternalServerError("Erro ao salvar a atividade")
 	}

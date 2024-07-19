@@ -137,3 +137,24 @@ func (controller *NotaController) handleRestErr(ctx *gin.Context, err error) {
 	}
 	ctx.JSON(statusCode, gin.H{"error": err.Error()})
 }
+func (controller *NotaController) FindNotasByAluno(ctx *gin.Context) {
+	alunoId := ctx.Param("alunoId")
+	id, err := strconv.ParseUint(alunoId, 10, 32)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "ID inválido"})
+		return
+	}
+
+	notasResponse, restErr := controller.NotaService.FindNotasByAlunoId(uint(id))
+	if restErr != nil {
+		controller.handleRestErr(ctx, restErr)
+		return
+	}
+
+	webResponse := data.ResponseApi{
+		Code:   http.StatusOK,
+		Status: "Ok",
+		Data:   notasResponse,
+	}
+	ctx.JSON(http.StatusOK, webResponse)
+}

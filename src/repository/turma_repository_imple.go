@@ -86,3 +86,15 @@ func (t *TurmaRepositoryImple) RemoveAlunoTurma(turmaId uint, alunoId uint) *res
 
 	return nil
 }
+func (t *TurmaRepositoryImple) FindAtividadesByTurmaId(turmaId uint) ([]models.Atividade, *rest_err.RestErr) {
+	var turma models.Turma
+	result := t.Db.Preload("Atividades").First(&turma, turmaId)
+	if result.Error != nil {
+		if result.Error == gorm.ErrRecordNotFound {
+			return nil, rest_err.NewNotFoundError("Turma não encontrada")
+		}
+		return nil, rest_err.NewInternalServerError("Erro ao buscar turma")
+	}
+
+	return turma.Atividades, nil
+}

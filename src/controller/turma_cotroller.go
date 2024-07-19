@@ -179,3 +179,14 @@ func (controller *TurmaController) handleRestErr(ctx *gin.Context, err error) {
 	}
 	ctx.JSON(statusCode, gin.H{"error": err.Error()})
 }
+func (controller *TurmaController) GetAtividadesByTurmaId(ctx *gin.Context) {
+	turmaId, err := strconv.ParseUint(ctx.Param("turmaId"), 10, 32)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "ID inválido"})
+		return
+	}
+
+	atividades, err := controller.TurmaService.FindAtividadesByTurmaId(uint(turmaId))
+
+	ctx.JSON(http.StatusOK, atividades)
+}

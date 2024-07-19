@@ -11,4 +11,5 @@ type NotaService interface {
 	Delete(notaId uint) *rest_err.RestErr
 	FindById(notaId uint) (data.AlunoNota, *rest_err.RestErr)
 	FindAll() ([]data.AlunoNota, *rest_err.RestErr)
+	FindNotasByAlunoId(alunoId uint) ([]data.AlunoNota, *rest_err.RestErr)
 }

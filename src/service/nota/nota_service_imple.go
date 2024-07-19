@@ -26,6 +26,15 @@ func NewNotaServiceImple(notaRepository repository.NotaRepository, atividadeRepo
 }
 
 func (n *NotaServiceImple) Create(nota data.NotaRequest) *rest_err.RestErr {
+
+	existingNota, err := n.NotaRepository.FindByAlunoAndAtividade(nota.AlunoId, nota.AtividadeId)
+	if err != nil {
+		return rest_err.NewInternalServerError("Erro ao verificar se a nota já existe")
+	}
+	if existingNota != nil {
+		return rest_err.NewBadRequestError("Nota para o aluno e a atividade já existe")
+	}
+
 	notaModel := models.Nota{
 		AlunoId:     nota.AlunoId,
 		AtividadeId: nota.AtividadeId,
@@ -41,7 +50,7 @@ func (n *NotaServiceImple) Create(nota data.NotaRequest) *rest_err.RestErr {
 	if notaModel.Valor > modelAtividade.Valor {
 		return rest_err.NewBadRequestError("Nota atribuida maior que a nota da atividade")
 	}
-	err := n.NotaRepository.Save(notaModel)
+	err = n.NotaRepository.Save(notaModel)
 	if err != nil {
 		return rest_err.NewInternalServerError("Erro ao salvar o nota")
 	}
@@ -136,4 +145,25 @@ func (n *NotaServiceImple) Update(nota data.AtualizarNota) *rest_err.RestErr {
 		return rest_err.NewInternalServerError("Erro ao atualizar a nota")
 	}
 	return nil
+}
+func (n *NotaServiceImple) FindNotasByAlunoId(alunoId uint) ([]data.AlunoNota, *rest_err.RestErr) {
+	notas, err := n.NotaRepository.FindNotasByAlunoId(alunoId)
+	if err != nil {
+		return nil, err
+	}
+
+	var notasResponse []data.AlunoNota
+	for _, nota := range notas {
+		notasResponse = append(notasResponse, data.AlunoNota{
+			AlunoId:        nota.AlunoId,
+			AlunoNome:      nota.Aluno.Nome,
+			Nota:           nota.Valor,
+			TurmaId:        nota.Atividade.TurmaId,
+			TurmaNome:      nota.Atividade.Turma.Nome,
+			AtividadeId:    nota.AtividadeId,
+			AtividadeNome:  nota.Atividade.Nome,
+			AtividadeValor: nota.Atividade.Valor,
+		})
+	}
+	return notasResponse, nil
 }
