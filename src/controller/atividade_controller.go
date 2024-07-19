@@ -114,6 +114,22 @@ func (controller *AtividadeController) FindById(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, webResponse)
 }
 
+/*
+	func (controller *AtividadeController) FindAll(ctx *gin.Context) {
+		atividadeResponse, err := controller.AtividadeService.FindAll()
+		if err != nil {
+			controller.handleRestErr(ctx, err)
+			return
+		}
+
+		webResponse := data.ResponseApi{
+			Code:   http.StatusOK,
+			Status: "Ok",
+			Data:   atividadeResponse,
+		}
+		ctx.JSON(http.StatusOK, webResponse)
+	}
+*/
 func (controller *AtividadeController) FindAll(ctx *gin.Context) {
 	atividadeResponse, err := controller.AtividadeService.FindAll()
 	if err != nil {

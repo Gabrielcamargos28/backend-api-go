@@ -40,9 +40,19 @@ func (a *AtividadeRepositoryImple) Delete(atividadeId uint) *rest_err.RestErr {
 	return nil
 }
 
+/*
+	func (a *AtividadeRepositoryImple) FindAll() ([]models.Atividade, *rest_err.RestErr) {
+		var atividades []models.Atividade
+		resultado := a.Db.Find(&atividades)
+		if resultado.Error != nil {
+			return nil, rest_err.NewInternalServerError("Erro ao buscar atividades")
+		}
+		return atividades, nil
+	}
+*/
 func (a *AtividadeRepositoryImple) FindAll() ([]models.Atividade, *rest_err.RestErr) {
 	var atividades []models.Atividade
-	resultado := a.Db.Find(&atividades)
+	resultado := a.Db.Preload("Turma.Professor").Preload("Notas.Aluno").Find(&atividades)
 	if resultado.Error != nil {
 		return nil, rest_err.NewInternalServerError("Erro ao buscar atividades")
 	}

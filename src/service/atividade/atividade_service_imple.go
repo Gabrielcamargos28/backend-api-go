@@ -118,11 +118,26 @@ func (a *AtividadeServiceImple) FindAll() ([]data.AtividadeResponse, *rest_err.R
 
 	var atividadesResponse []data.AtividadeResponse
 	for _, atividade := range atividadesModel {
+		turmaResponse := data.TurmaResponse{
+			Id:        atividade.Turma.Id,
+			Nome:      atividade.Turma.Nome,
+			Semestre:  atividade.Turma.Semestre,
+			Ano:       atividade.Turma.Ano,
+			Professor: atividade.Turma.Professor.Nome,
+		}
 
-		turmaModel, err := a.TurmaRepository.FindById(atividade.TurmaId)
-		if err != nil {
-			log.Printf("Erro ao buscar turma por ID %d: %v", atividade.TurmaId, err)
-			return nil, rest_err.NewInternalServerError("Erro ao buscar turma associada à atividade")
+		var notasResponse []data.AlunoNota
+		for _, nota := range atividade.Notas {
+			notaResponse := data.AlunoNota{
+				AlunoId:       nota.AlunoId,
+				AlunoNome:     nota.Aluno.Nome,
+				Nota:          nota.Valor,
+				TurmaId:       atividade.Turma.Id,
+				TurmaNome:     atividade.Turma.Nome,
+				AtividadeId:   atividade.Id,
+				AtividadeNome: atividade.Nome,
+			}
+			notasResponse = append(notasResponse, notaResponse)
 		}
 
 		atividadeResponse := data.AtividadeResponse{
@@ -130,13 +145,8 @@ func (a *AtividadeServiceImple) FindAll() ([]data.AtividadeResponse, *rest_err.R
 			Nome:  atividade.Nome,
 			Valor: atividade.Valor,
 			Data:  atividade.Data,
-			Turma: data.TurmaResponse{
-				Id:        turmaModel.Id,
-				Nome:      turmaModel.Nome,
-				Semestre:  turmaModel.Semestre,
-				Ano:       turmaModel.Ano,
-				Professor: turmaModel.Professor.Nome,
-			},
+			Turma: turmaResponse,
+			Notas: notasResponse,
 		}
 
 		atividadesResponse = append(atividadesResponse, atividadeResponse)

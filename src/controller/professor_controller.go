@@ -57,9 +57,6 @@ func (controller *ProfessorController) Update(ctx *gin.Context) {
 	requisicaoAtualizar.Id = uint(id)
 
 	err = controller.ProfessorService.Update(requisicaoAtualizar)
-	if err != nil {
-		return
-	}
 
 	webResponse := data.ResponseApi{
 		Code:   http.StatusOK,
