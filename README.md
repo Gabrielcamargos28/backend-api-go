@@ -6,7 +6,7 @@ Este projeto foi desenvolvido como parte do curso de Análise e Desenvolvimento 
 
 - **Backend**: Golang
 - **ORM**: GORM (https://gorm.io/)
-- **Frontend**: (HTML + CSS + Bootstrap + JS, React, Angular, etc)
+- **Frontend**: (HTML + CSS + Bootstrap + JS, React)
 - **Hospedagem**: Oracle Cloud (https://www.oracle.com/br/cloud/)
 
 ## Funcionalidades
