@@ -8,7 +8,7 @@ type Turma struct {
 	ProfessorId uint        `gorm:"index"`
 	Professor   Professor   `gorm:"contraint:OnUpdate:CASCADE,OnDelete:SET NULL;"`
 	Atividades  []Atividade `gorm:"foreignKey:TurmaId"`
-	Alunos      []Aluno     `gorm:"many2many:turma_alunos;"`
+	Alunos      []Aluno     `gorm:"many2many:turma_alunos;constraint:OnDelete:CASCADE;"`
 }
 
 func (Turma) TableName() string {

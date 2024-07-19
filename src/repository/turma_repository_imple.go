@@ -3,7 +3,6 @@ package repository
 import (
 	"controle-notas/src/configuration/rest_err"
 	"controle-notas/src/models"
-	"log"
 
 	"gorm.io/gorm"
 )
@@ -45,16 +44,13 @@ func (t *TurmaRepositoryImple) Delete(turmaId uint) *rest_err.RestErr {
 
 func (t *TurmaRepositoryImple) FindById(turmaId uint) (models.Turma, *rest_err.RestErr) {
 	var turma models.Turma
-	result := t.Db.First(&turma, turmaId)
+	result := t.Db.Preload("Alunos").Preload("Professor").Preload("Atividades").First(&turma, turmaId)
 	if result.Error != nil {
 		if result.Error == gorm.ErrRecordNotFound {
-			log.Printf("olá")
 			return turma, rest_err.NewNotFoundError("Turma não encontrada")
 		}
-		log.Printf("olá")
 		return turma, rest_err.NewInternalServerError("Erro ao buscar turma")
 	}
-	log.Printf("olá")
 	return turma, nil
 }
 
@@ -89,4 +85,16 @@ func (t *TurmaRepositoryImple) RemoveAlunoTurma(turmaId uint, alunoId uint) *res
 	}
 
 	return nil
+}
+func (t *TurmaRepositoryImple) FindAtividadesByTurmaId(turmaId uint) ([]models.Atividade, *rest_err.RestErr) {
+	var turma models.Turma
+	result := t.Db.Preload("Atividades").First(&turma, turmaId)
+	if result.Error != nil {
+		if result.Error == gorm.ErrRecordNotFound {
+			return nil, rest_err.NewNotFoundError("Turma não encontrada")
+		}
+		return nil, rest_err.NewInternalServerError("Erro ao buscar turma")
+	}
+
+	return turma.Atividades, nil
 }

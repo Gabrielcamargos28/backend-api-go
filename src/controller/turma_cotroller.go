@@ -100,9 +100,9 @@ func (controller *TurmaController) FindById(ctx *gin.Context) {
 		return
 	}
 
-	turmaResponse, err := controller.TurmaService.FindById(uint(id))
-	if err != nil {
-		controller.handleRestErr(ctx, err)
+	turmaResponse, restErr := controller.TurmaService.FindById(uint(id))
+	if restErr != nil {
+		controller.handleRestErr(ctx, restErr)
 		return
 	}
 
@@ -113,7 +113,6 @@ func (controller *TurmaController) FindById(ctx *gin.Context) {
 	}
 	ctx.JSON(http.StatusOK, webResponse)
 }
-
 func (controller *TurmaController) FindAll(ctx *gin.Context) {
 	turmaResponse, err := controller.TurmaService.FindAll()
 	if err != nil {
@@ -179,4 +178,15 @@ func (controller *TurmaController) handleRestErr(ctx *gin.Context, err error) {
 		statusCode = restErr.Campo
 	}
 	ctx.JSON(statusCode, gin.H{"error": err.Error()})
+}
+func (controller *TurmaController) GetAtividadesByTurmaId(ctx *gin.Context) {
+	turmaId, err := strconv.ParseUint(ctx.Param("turmaId"), 10, 32)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "ID inválido"})
+		return
+	}
+
+	atividades, err := controller.TurmaService.FindAtividadesByTurmaId(uint(turmaId))
+
+	ctx.JSON(http.StatusOK, atividades)
 }
