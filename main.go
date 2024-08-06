@@ -16,10 +16,10 @@ import (
 
 	"github.com/go-playground/validator/v10"
 	"github.com/joho/godotenv"
+	"github.com/rs/cors"
 )
 
 func main() {
-
 	err := godotenv.Load()
 	if err != nil {
 		log.Fatal("Erro ao iniciar .env")
@@ -51,11 +51,21 @@ func main() {
 
 	routes := router.NewRouter(professorController, turmaController, alunoController, atividadeController, notaController)
 
+	// Configurando CORS
+	corsOptions := cors.New(cors.Options{
+		AllowedOrigins:   []string{"*"}, // Origens permitidas
+		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE"}, // Métodos permitidos
+		AllowedHeaders:   []string{"Content-Type", "Authorization"}, // Cabeçalhos permitidos
+		AllowCredentials: true,
+	})
+
+	corsHandler := corsOptions.Handler(routes)
+
 	server := &http.Server{
-		Addr:    ":3000",
-		Handler: routes,
+		Addr:    ":5001",
+		Handler: corsHandler,
 	}
 
-	log.Println("Servidor iniciado na porta 3000...")
+	log.Println("Servidor iniciado na porta 5001...")
 	log.Fatal(server.ListenAndServe())
 }

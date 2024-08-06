@@ -60,6 +60,7 @@ func (p *ProfessorServiceImple) FindAll() ([]data.ProfessorResponse, *rest_err.R
 		professor := data.ProfessorResponse{
 			Id:   value.Id,
 			Nome: value.Nome,
+			Email: value.Email,
 		}
 		professors = append(professors, professor)
 	}
