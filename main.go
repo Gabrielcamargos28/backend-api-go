@@ -16,6 +16,7 @@ import (
 
 	"github.com/go-playground/validator/v10"
 	"github.com/joho/godotenv"
+	"github.com/rs/cors"
 )
 
 func main() {
@@ -51,9 +52,18 @@ func main() {
 
 	routes := router.NewRouter(professorController, turmaController, alunoController, atividadeController, notaController)
 
+	corsOptions := cors.New(cors.Options{
+		AllowedOrigins:   []string{"*"},                             // Origens permitidas
+		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE"},  // Métodos permitidos
+		AllowedHeaders:   []string{"Content-Type", "Authorization"}, // Cabeçalhos permitidos
+		AllowCredentials: true,
+	})
+
+	corsHandler := corsOptions.Handler(routes)
+
 	server := &http.Server{
 		Addr:    ":3000",
-		Handler: routes,
+		Handler: corsHandler,
 	}
 
 	log.Println("Servidor iniciado na porta 3000...")
