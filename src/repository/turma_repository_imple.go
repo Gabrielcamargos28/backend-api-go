@@ -34,11 +34,31 @@ func (t *TurmaRepositoryImple) Update(turma models.Turma) *rest_err.RestErr {
 	return nil
 }
 
+/*
+	func (t *TurmaRepositoryImple) Delete(turmaId uint) *rest_err.RestErr {
+		var turma models.Turma
+		if result := t.Db.Where("id = ?", turmaId).Delete(&turma); result.Error != nil {
+			return rest_err.NewInternalServerError("Erro ao deletar turma")
+		}
+		return nil
+	}
+*/
 func (t *TurmaRepositoryImple) Delete(turmaId uint) *rest_err.RestErr {
 	var turma models.Turma
-	if result := t.Db.Where("id = ?", turmaId).Delete(&turma); result.Error != nil {
+
+	tx := t.Db.Begin()
+
+	if err := tx.Preload("Atividades").Preload("Alunos").First(&turma, turmaId).Error; err != nil {
+		tx.Rollback()
+		return rest_err.NewInternalServerError("Erro ao encontrar turma")
+	}
+
+	if result := tx.Delete(&turma); result.Error != nil {
+		tx.Rollback()
 		return rest_err.NewInternalServerError("Erro ao deletar turma")
 	}
+
+	tx.Commit()
 	return nil
 }
 

@@ -57,10 +57,6 @@ func (controller *TurmaController) Update(ctx *gin.Context) {
 	requisicaoAtualizar.Id = uint(id)
 
 	err = controller.TurmaService.Update(requisicaoAtualizar)
-	if err != nil {
-		controller.handleRestErr(ctx, err)
-		return
-	}
 
 	webResponse := data.ResponseApi{
 		Code:   http.StatusOK,
