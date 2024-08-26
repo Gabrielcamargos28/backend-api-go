@@ -79,8 +79,12 @@ func (controller *NotaController) Delete(ctx *gin.Context) {
 	}
 
 	err = controller.NotaService.Delete(uint(id))
-	if err != nil {
+	/*if err != nil {
 		controller.handleRestErr(ctx, err)
+		return
+	}*/
+	if err := controller.NotaService.Delete(uint(id)); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Mensagem})
 		return
 	}
 

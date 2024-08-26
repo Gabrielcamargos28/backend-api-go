@@ -62,9 +62,9 @@ func (n *NotaServiceImple) Delete(notaId uint) *rest_err.RestErr {
 	err := n.NotaRepository.Delete(notaId)
 	if err != nil {
 		if strings.Contains(err.Error(), "violates foreign key constraint") {
-			return rest_err.NewBadRequestError("Não é possível deletar o professor pois ele está associado a uma ou mais turmas")
+			return rest_err.NewBadRequestError("Não é possível deletar a nota pois ele está associado a uma ou mais turmas")
 		}
-		return rest_err.NewInternalServerError("Erro ao deletar o professor")
+		return rest_err.NewInternalServerError("Erro ao deletar a nota")
 	}
 	return nil
 }
@@ -78,13 +78,15 @@ func (n *NotaServiceImple) FindAll() ([]data.AlunoNota, *rest_err.RestErr) {
 	var notas []data.AlunoNota
 	for _, value := range result {
 		nota := data.AlunoNota{
-			AlunoId:       value.AlunoId,
-			AlunoNome:     value.Aluno.Nome,
-			Nota:          value.Valor,
-			TurmaId:       value.Atividade.TurmaId,
-			TurmaNome:     value.Atividade.Turma.Nome,
-			AtividadeId:   value.AtividadeId,
-			AtividadeNome: value.Atividade.Nome,
+			AlunoId:        value.AlunoId,
+			AlunoNome:      value.Aluno.Nome,
+			NotaId:         value.Id,
+			Nota:           value.Valor,
+			TurmaId:        value.Atividade.TurmaId,
+			TurmaNome:      value.Atividade.Turma.Nome,
+			AtividadeId:    value.AtividadeId,
+			AtividadeNome:  value.Atividade.Nome,
+			AtividadeValor: value.Atividade.Valor,
 		}
 		notas = append(notas, nota)
 	}
@@ -119,13 +121,14 @@ func (n *NotaServiceImple) FindById(notaId uint) (data.AlunoNota, *rest_err.Rest
 	}
 
 	notaResponse := data.AlunoNota{
-		AlunoId:       notaData.AlunoId,
-		AlunoNome:     notaData.Aluno.Nome,
-		Nota:          notaData.Valor,
-		TurmaId:       notaData.Atividade.Turma.Id,
-		TurmaNome:     notaData.Atividade.Turma.Nome,
-		AtividadeId:   notaData.AtividadeId,
-		AtividadeNome: notaData.Atividade.Nome,
+		AlunoId:        notaData.AlunoId,
+		AlunoNome:      notaData.Aluno.Nome,
+		Nota:           notaData.Valor,
+		TurmaId:        notaData.Atividade.Turma.Id,
+		TurmaNome:      notaData.Atividade.Turma.Nome,
+		AtividadeId:    notaData.AtividadeId,
+		AtividadeNome:  notaData.Atividade.Nome,
+		AtividadeValor: notaData.Atividade.Valor,
 	}
 	return notaResponse, nil
 }

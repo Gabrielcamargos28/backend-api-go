@@ -75,8 +75,8 @@ func (controller *TurmaController) Delete(ctx *gin.Context) {
 	}
 
 	err = controller.TurmaService.Delete(uint(id))
-	if err != nil {
-		controller.handleRestErr(ctx, err)
+	if err := controller.TurmaService.Delete(uint(id)); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Mensagem})
 		return
 	}
 

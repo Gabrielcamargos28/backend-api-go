@@ -58,8 +58,9 @@ func (p *ProfessorServiceImple) FindAll() ([]data.ProfessorResponse, *rest_err.R
 	var professors []data.ProfessorResponse
 	for _, value := range result {
 		professor := data.ProfessorResponse{
-			Id:   value.Id,
-			Nome: value.Nome,
+			Id:    value.Id,
+			Nome:  value.Nome,
+			Email: value.Email,
 		}
 		professors = append(professors, professor)
 	}
@@ -73,8 +74,9 @@ func (p *ProfessorServiceImple) FindById(professorId uint) (data.ProfessorRespon
 		return data.ProfessorResponse{}, rest_err.NewInternalServerError("Erro ao buscar professor por ID")
 	}
 	professorResponse := data.ProfessorResponse{
-		Id:   professorData.Id,
-		Nome: professorData.Nome,
+		Id:    professorData.Id,
+		Nome:  professorData.Nome,
+		Email: professorData.Email,
 	}
 	return professorResponse, nil
 }

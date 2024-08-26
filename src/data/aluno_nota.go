@@ -3,6 +3,7 @@ package data
 type AlunoNota struct {
 	AlunoId        uint    `json:"alunoId"`
 	AlunoNome      string  `json:"alunoNome"`
+	NotaId         uint    `json:"notaId"`
 	Nota           float64 `json:"nota"`
 	TurmaId        uint    `json:"turmaId"`
 	TurmaNome      string  `json:"turmaNome"`
