@@ -74,8 +74,8 @@ func (controller *ProfessorController) Delete(ctx *gin.Context) {
 		return
 	}
 
-	err = controller.ProfessorService.Delete(uint(id))
-	if err != nil {
+	if err := controller.ProfessorService.Delete(uint(id)); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Mensagem})
 		return
 	}
 
@@ -84,6 +84,7 @@ func (controller *ProfessorController) Delete(ctx *gin.Context) {
 		Status: "Ok",
 		Data:   nil,
 	}
+	ctx.Header("Content-Type", "application/json")
 	ctx.JSON(http.StatusOK, webResponse)
 }
 
