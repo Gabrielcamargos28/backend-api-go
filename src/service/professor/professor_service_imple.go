@@ -77,6 +77,7 @@ func (p *ProfessorServiceImple) FindById(professorId uint) (data.ProfessorRespon
 		Id:    professorData.Id,
 		Nome:  professorData.Nome,
 		Email: professorData.Email,
+		CPF:   professorData.CPF,
 	}
 	return professorResponse, nil
 }
