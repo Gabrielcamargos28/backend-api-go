@@ -64,8 +64,9 @@ func (a *AlunoServiceImple) FindAll() ([]data.AlunoResumido, *rest_err.RestErr) 
 	var alunos []data.AlunoResumido
 	for _, value := range result {
 		aluno := data.AlunoResumido{
-			Id:   value.Id,
-			Nome: value.Nome,
+			Id:        value.Id,
+			Nome:      value.Nome,
+			Matricula: value.Matricula,
 		}
 		/*for _, turma := range value.Turmas {
 			turmaResponse := data.TurmaResponse{
