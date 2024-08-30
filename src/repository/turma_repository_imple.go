@@ -3,6 +3,7 @@ package repository
 import (
 	"controle-notas/src/configuration/rest_err"
 	"controle-notas/src/models"
+	"time"
 
 	"gorm.io/gorm"
 )
@@ -42,7 +43,7 @@ func (t *TurmaRepositoryImple) Update(turma models.Turma) *rest_err.RestErr {
 		}
 		return nil
 	}
-*/
+
 func (t *TurmaRepositoryImple) Delete(turmaId uint) *rest_err.RestErr {
 	var turma models.Turma
 
@@ -54,6 +55,32 @@ func (t *TurmaRepositoryImple) Delete(turmaId uint) *rest_err.RestErr {
 	}
 
 	if result := tx.Delete(&turma); result.Error != nil {
+		tx.Rollback()
+		return rest_err.NewInternalServerError("Erro ao deletar turma")
+	}
+
+	tx.Commit()
+	return nil
+}*/
+
+func (t *TurmaRepositoryImple) Delete(turmaId uint) *rest_err.RestErr {
+	var turma models.Turma
+
+	tx := t.Db.Begin()
+
+	if err := tx.Preload("Atividades").Preload("Alunos").Preload("Professor").First(&turma, turmaId).Error; err != nil {
+		tx.Rollback()
+		return rest_err.NewInternalServerError("Erro ao encontrar turma")
+	}
+
+	if len(turma.Alunos) > 0 || turma.ProfessorId != 0 {
+		tx.Rollback()
+		return rest_err.NewBadRequestError("Não é possível deletar uma turma com alunos ou professor associado")
+	}
+
+	now := time.Now()
+	turma.DeletedAt = &now
+	if err := tx.Save(&turma).Error; err != nil {
 		tx.Rollback()
 		return rest_err.NewInternalServerError("Erro ao deletar turma")
 	}
