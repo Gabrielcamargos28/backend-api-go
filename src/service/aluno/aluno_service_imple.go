@@ -126,11 +126,12 @@ func (s *AlunoServiceImple) FindNotasByAlunoId(alunoId uint) ([]data.NotaRespons
 	var notasResponse []data.NotaResponse
 	for _, nota := range notasData {
 		notaResponse := data.NotaResponse{
-			Id:          nota.Id,
-			Valor:       nota.Valor,
-			AtividadeId: nota.AtividadeId,
-			Atividade:   nota.Atividade.Nome,
-			Data:        nota.Atividade.Data,
+			Id:             nota.Id,
+			Valor:          nota.Valor,
+			AtividadeId:    nota.AtividadeId,
+			Atividade:      nota.Atividade.Nome,
+			AtividadeValor: uint(nota.Atividade.Valor),
+			Data:           nota.Atividade.Data,
 		}
 		notasResponse = append(notasResponse, notaResponse)
 	}

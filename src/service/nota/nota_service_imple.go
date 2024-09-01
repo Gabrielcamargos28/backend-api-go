@@ -123,6 +123,7 @@ func (n *NotaServiceImple) FindById(notaId uint) (data.AlunoNota, *rest_err.Rest
 	notaResponse := data.AlunoNota{
 		AlunoId:        notaData.AlunoId,
 		AlunoNome:      notaData.Aluno.Nome,
+		NotaId:         notaData.Id,
 		Nota:           notaData.Valor,
 		TurmaId:        notaData.Atividade.Turma.Id,
 		TurmaNome:      notaData.Atividade.Turma.Nome,
@@ -160,6 +161,7 @@ func (n *NotaServiceImple) FindNotasByAlunoId(alunoId uint) ([]data.AlunoNota, *
 		notasResponse = append(notasResponse, data.AlunoNota{
 			AlunoId:        nota.AlunoId,
 			AlunoNome:      nota.Aluno.Nome,
+			NotaId:         nota.Id,
 			Nota:           nota.Valor,
 			TurmaId:        nota.Atividade.TurmaId,
 			TurmaNome:      nota.Atividade.Turma.Nome,
