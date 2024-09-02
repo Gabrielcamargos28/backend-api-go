@@ -54,13 +54,15 @@ func (controller *NotaController) Update(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
+
+	// Atribuir o ID do parâmetro de rota ao campo Id da estrutura
 	requisicaoAtualizar.Id = uint(id)
 
 	err = controller.NotaService.Update(requisicaoAtualizar)
-	if err != nil {
+	/*if err != nil {
 		controller.handleRestErr(ctx, err)
 		return
-	}
+	}*/
 
 	webResponse := data.ResponseApi{
 		Code:   http.StatusOK,

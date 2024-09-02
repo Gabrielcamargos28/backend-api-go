@@ -135,21 +135,23 @@ func (n *NotaServiceImple) FindById(notaId uint) (data.AlunoNota, *rest_err.Rest
 }
 
 func (n *NotaServiceImple) Update(nota data.AtualizarNota) *rest_err.RestErr {
-	if err := n.validate.Struct(nota); err != nil {
-		return rest_err.NewBadRequestError("Dados inválidos")
-	}
+	notaModel, err := n.NotaRepository.FindById(nota.Id)
 
-	notaModel := models.Nota{
-		Id:    nota.Id,
-		Valor: nota.Valor,
-	}
-
-	err := n.NotaRepository.Update(notaModel)
 	if err != nil {
+		log.Printf("Erro ao buscar nota por ID %d: %v", nota.Id, err)
+		return rest_err.NewInternalServerError("Erro ao buscar nota para atualização")
+	}
+
+	// Cria o modelo Nota com o ID e Valor para atualização
+	notaModel.Valor = nota.Valor
+
+	if err := n.NotaRepository.Update(notaModel); err != nil {
 		return rest_err.NewInternalServerError("Erro ao atualizar a nota")
 	}
+
 	return nil
 }
+
 func (n *NotaServiceImple) FindNotasByAlunoId(alunoId uint) ([]data.AlunoNota, *rest_err.RestErr) {
 	notas, err := n.NotaRepository.FindNotasByAlunoId(alunoId)
 	if err != nil {

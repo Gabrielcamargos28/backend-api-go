@@ -66,16 +66,31 @@ func (n *NotaRepositoryImple) Save(nota models.Nota) *rest_err.RestErr {
 	return nil
 }
 
+/*
+	func (n *NotaRepositoryImple) Update(nota models.Nota) *rest_err.RestErr {
+		var notaUpdate = data.AtualizarNota{
+			Id:    nota.Id,
+			Valor: nota.Valor,
+		}
+		if result := n.Db.Model(&nota).Updates(notaUpdate); result.Error != nil {
+			return rest_err.NewInternalServerError("Erro ao atualizar nota")
+		}
+		return nil
+	}
+*/
 func (n *NotaRepositoryImple) Update(nota models.Nota) *rest_err.RestErr {
-	var notaUpdate = data.AtualizarNota{
+
+	var updateNota = data.AtualizarNota{
 		Id:    nota.Id,
 		Valor: nota.Valor,
 	}
-	if result := n.Db.Model(&nota).Updates(notaUpdate); result.Error != nil {
+
+	if result := n.Db.Model(&nota).Updates(updateNota); result.Error != nil {
 		return rest_err.NewInternalServerError("Erro ao atualizar nota")
 	}
 	return nil
 }
+
 func (r *NotaRepositoryImple) FindNotasByAlunoId(alunoId uint) ([]models.Nota, *rest_err.RestErr) {
 	var notas []models.Nota
 	result := r.Db.Preload("Atividade.Turma").Where("aluno_id = ?", alunoId).Find(&notas)
